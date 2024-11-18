@@ -1,6 +1,14 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router'
 
 export default function UserPage() {
+    const router = useRouter()
+
+    const handleLogout = () => {
+        router.replace('/login')
+    }
+
+
     return (
         <View style={styles.container}>
             <Image style={styles.avatar} source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}/>
@@ -8,7 +16,7 @@ export default function UserPage() {
             <Text style={styles.text}>Age:</Text>
             <Text style={styles.text}>Weight:</Text>
             <Text style={styles.text}>Height:</Text>
-            <TouchableOpacity style={styles.logout}>Log Out</TouchableOpacity>
+            <TouchableOpacity style={styles.logout} onPress={handleLogout} >Log Out</TouchableOpacity>
             <TouchableOpacity style={styles.editProfile}>Edit Profile</TouchableOpacity>
         </View>
     )
@@ -30,7 +38,6 @@ const styles = StyleSheet.create({
     text: {
         color: '#000',
         fontSize: 20,
-        fontWeight: 'bold',
     },
     logout: {
         position: 'absolute',
@@ -40,10 +47,8 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 20,
         fontWeight: 'bold',
-        borderRadius: 5,
-        padding: 5,
-        borderColor: '#000',
-        borderWidth: 3
+        borderRadius: 25,
+        padding: 10,
     },
     editProfile: {
         position: 'absolute',
@@ -52,9 +57,7 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 20,
         fontWeight: 'bold',
-        borderRadius: 5,
-        padding: 5,
-        borderColor: '#000',
-        borderWidth: 3
+        borderRadius: 25,
+        padding: 10,
     }
 })

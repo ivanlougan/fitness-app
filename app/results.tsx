@@ -26,7 +26,8 @@ const styles = StyleSheet.create({
     title: {
         color: '#000',
         fontSize: 30,
-        marginBottom: 20
+        marginBottom: 20,
+        fontWeight: 'bold'
     },
     button:{
         backgroundColor: '#D3D4D9',
@@ -35,7 +36,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 25,
         borderRadius: 25,
         color: '#000',
-        fontSize: 20
+        fontSize: 20,
+        fontWeight: 'bold'
     },
     shareButton: {
         marginTop: 20,
@@ -48,5 +50,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 2,
         color: '#000',
+        fontSize: 20,
+        fontWeight: 'bold'
     }
 })
