@@ -30,12 +30,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     button:{
-        backgroundColor: '#D3D4D9',
+        backgroundColor: '#4B88A2',
         marginTop: 20,
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 25,
-        color: '#000',
+        color: '#fff',
         fontSize: 20,
         fontWeight: 'bold'
     },
@@ -45,11 +45,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 25,
-        shadowColor: '#000',
-        shadowOffset: {width: 0, height: 2},
-        shadowOpacity: 0.25,
-        shadowRadius: 2,
-        color: '#000',
+        color: '#fff',
         fontSize: 20,
         fontWeight: 'bold'
     }
