@@ -6,6 +6,7 @@ export default function HomePage() {
     <View style={styles.container}>
       <Text style={styles.text}>Home</Text>
       <Link href="/results" style={styles.text}>Go to Results</Link>
+      <Link href="/workout" style={styles.text}>Go to Workout</Link>
     </View>
   );
 }
