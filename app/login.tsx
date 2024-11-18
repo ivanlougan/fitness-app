@@ -29,8 +29,9 @@ const styles = StyleSheet.create({
     header: {
         position: 'absolute',
         top: '25%',
-        fontSize: 20,
-        fontWeight: 'bold'
+        fontSize: 50,
+        fontWeight: 'bold',
+        color: '#252627'
     },
     button: {
         backgroundColor: '#D3D4D9',
