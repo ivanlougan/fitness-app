@@ -5,6 +5,7 @@ export default function HomePage() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home</Text>
+      <Link href="/results" style={styles.text}>Go to Results</Link>
     </View>
   );
 }
@@ -19,4 +20,9 @@ const styles = StyleSheet.create({
   text: {
     color: '#000',
   },
+  link: {
+    fontSize: 20,
+    color: '#000',
+    textDecorationLine: 'underline'
+  }
 });
