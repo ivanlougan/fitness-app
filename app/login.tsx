@@ -55,7 +55,7 @@ export default function LoginPage() {
                     )}
                 />
             ) : (
-                <Text>No users found.</Text>
+                <Text>No users found</Text>
             )}
         </View>
     );
@@ -87,5 +87,6 @@ const styles = StyleSheet.create({
         color: '#000',
         fontSize: 18,
         fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
