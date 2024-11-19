@@ -1,25 +1,43 @@
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'
+import { useRouter } from 'expo-router';
 
 export default function UserPage() {
-    const router = useRouter()
+    const router = useRouter();
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const signedInUser = localStorage.getItem('signedInUser');
+        if (signedInUser) {
+            setUser(JSON.parse(signedInUser)); 
+        } else {
+            router.replace('/login'); 
+        }
+    }, [router]);
 
     const handleLogout = () => {
-        router.replace('/login')
-    }
-
+        localStorage.removeItem('signedInUser'); 
+        router.replace('/login'); 
+    };
 
     return (
         <View style={styles.container}>
-            <Image style={styles.avatar} source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}/>
-            <Text style={styles.text}>Username/Name</Text>
-            <Text style={styles.text}>Age:</Text>
-            <Text style={styles.text}>Weight:</Text>
-            <Text style={styles.text}>Height:</Text>
-            <TouchableOpacity style={styles.logout} onPress={handleLogout} >Log Out</TouchableOpacity>
-            <TouchableOpacity style={styles.editProfile}>Edit Profile</TouchableOpacity>
+            {user ? (
+                <>
+                    <Image style={styles.avatar} source={{ uri: user.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} />
+                    <Text style={styles.text}>Name: {user.name}</Text>
+                    <Text style={styles.text}>Age: {user.age}</Text>
+                    <Text style={styles.text}>Weight: {user.weight}</Text>
+                    <Text style={styles.text}>Height: {user.height}</Text>
+                    <TouchableOpacity style={styles.logout} onPress={handleLogout}>
+                        Log Out
+                    </TouchableOpacity>
+                </>
+            ) : (
+                <Text>Loading user information...</Text>
+            )}
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -33,31 +51,19 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 50,
-        marginBottom: 10
+        marginBottom: 10,
     },
     text: {
         color: '#000',
         fontSize: 20,
     },
     logout: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
         backgroundColor: '#4B88A2',
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
         borderRadius: 25,
         padding: 10,
+        marginTop: 20,
     },
-    editProfile: {
-        position: 'absolute',
-        bottom: 100,
-        backgroundColor: '#4B88A2',
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
-        borderRadius: 25,
-        padding: 10,
-    }
-})
+});
