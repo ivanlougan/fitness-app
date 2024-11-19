@@ -37,7 +37,7 @@ export default function UserPage() {
         <View style={styles.container}>
             {user ? (
                 <>
-                    <Image style={styles.avatar} source={{ uri: user.avatar || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} />
+                    <Image style={styles.avatar} source={{ uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} />
                     <Text style={styles.text}>Name: {user.name}</Text>
                     <Text style={styles.text}>Age: {user.age}</Text>
                     <Text style={styles.text}>Weight: {user.weight}</Text>
@@ -78,6 +78,11 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         padding: 10,
         marginTop: 20,
+    },
+    logoutText: {
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
 });
 
