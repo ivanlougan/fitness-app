@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row', 
         minWidth: 190,  
         maxWidth: '90%', 
+        alignSelf: 'center',
     },
     avatar: {
         width: 50,  
