@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getUsers } from '../api'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
-  
+
     useEffect(() => {
         getUsers()
             .then((data) => {
@@ -19,23 +20,26 @@ export default function LoginPage() {
                 setLoading(false);
             });
     }, []);
-  
-    const handleUserSelection = (user) => {
+
+    const handleUserSelection = async (user) => {
         try {
-            localStorage.setItem('signedInUser', JSON.stringify(user)); 
+            await AsyncStorage.setItem('signedInUser', JSON.stringify(user)); 
             router.replace('/'); 
         } catch (error) {
             console.error('Error storing user:', error);
         }
     };
-  
+
     useEffect(() => {
-        const signedInUser = localStorage.getItem('signedInUser');
-        if (signedInUser) {
-            router.replace('/user'); 
-        }
+        const checkSignedInUser = async () => {
+            const signedInUser = await AsyncStorage.getItem('signedInUser');
+            if (signedInUser) {
+                router.replace('/user'); 
+            }
+        };
+        checkSignedInUser();
     }, []);
-  
+
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Select User</Text>
@@ -60,7 +64,7 @@ export default function LoginPage() {
         </View>
     );
 }
-  
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

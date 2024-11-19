@@ -1,23 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function UserPage() {
     const router = useRouter();
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const signedInUser = localStorage.getItem('signedInUser');
-        if (signedInUser) {
-            setUser(JSON.parse(signedInUser)); 
-        } else {
-            router.replace('/login'); 
-        }
+        const getUserFromStorage = async () => {
+            try {
+                const signedInUser = await AsyncStorage.getItem('signedInUser');
+                if (signedInUser) {
+                    setUser(JSON.parse(signedInUser)); 
+                } else {
+                    router.replace('/login');
+                }
+            } catch (error) {
+                console.error('Error fetching user:', error);
+            }
+        };
+
+        getUserFromStorage();
     }, [router]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('signedInUser'); 
-        router.replace('/login'); 
+    const handleLogout = async () => {
+        try {
+            await AsyncStorage.removeItem('signedInUser');
+            router.replace('/login');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     };
 
     return (
@@ -30,7 +43,7 @@ export default function UserPage() {
                     <Text style={styles.text}>Weight: {user.weight}</Text>
                     <Text style={styles.text}>Height: {user.height}</Text>
                     <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-                        Log Out
+                        <Text style={styles.logoutText}>Log Out</Text> 
                     </TouchableOpacity>
                 </>
             ) : (
@@ -67,3 +80,4 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
 });
+
