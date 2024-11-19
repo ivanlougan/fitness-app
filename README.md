@@ -52,5 +52,4 @@ Join our community of developers creating universal apps.
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-npm install mongodb
-npm install dotenv
+npm install axios

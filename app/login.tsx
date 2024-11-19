@@ -23,7 +23,7 @@ export default function LoginPage() {
     const handleUserSelection = (user) => {
         try {
             localStorage.setItem('signedInUser', JSON.stringify(user)); 
-            router.replace('/user'); 
+            router.replace('/'); 
         } catch (error) {
             console.error('Error storing user:', error);
         }
@@ -77,7 +77,8 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: '#D3D4D9',
-        marginTop: 10,
+        marginTop: 20,
+        marginBottom: 20,
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
