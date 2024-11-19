@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getUsers } from '../api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -54,6 +54,10 @@ export default function LoginPage() {
                             style={styles.button}
                             onPress={() => handleUserSelection(item)}
                         >
+                            <Image 
+                                style={styles.avatar}
+                                source={{ uri: item.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} 
+                            />
                             <Text style={styles.buttonText}>{item.name}</Text> 
                         </TouchableOpacity>
                     )}
@@ -85,7 +89,16 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 8,
+        borderRadius: 50, 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        minWidth: 150, 
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 30, 
+        marginBottom: 10, 
     },
     buttonText: {
         color: '#000',
