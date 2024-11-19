@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 export default function MenuPage() {
     return (
         <View style={styles.container}>
-            <Link href="/bmi" style={styles.bmiButton}>
+            <Link href="/bmi" style={styles.bmiButton} >
                 <Text style={styles.buttonText}>BMI</Text>
             </Link>
 
