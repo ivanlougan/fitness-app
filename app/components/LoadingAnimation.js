@@ -1,36 +1,32 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet, Animated } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
+import anime from 'animejs/lib/anime.es.js';  // Import Anime.js
 
 export default function LoadingDumbbell({ size = 50 }) {
-    const spinValue = useRef(new Animated.Value(0)).current;
+    const imageRef = useRef(null);
 
     useEffect(() => {
-        const spinAnimation = Animated.loop(
-            Animated.timing(spinValue, {
-                toValue: 1,
-                duration: 1000, 
-                useNativeDriver: true,
-                loop: true,
-            })
-        );
-        spinAnimation.start();
+        // Use Anime.js to create the spinning animation
+        const spinAnimation = anime({
+            targets: imageRef.current,
+            rotate: '360deg', // Set the rotation to 360 degrees
+            duration: 1000, // Duration of one full spin
+            loop: true, // Infinite loop
+            easing: 'linear', // Smooth, linear animation
+        });
 
-        return () => spinAnimation.stop(); 
-    }, [spinValue]);
-
-    const spin = spinValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ['0deg', '360deg'], 
-    });
+        return () => {
+            // Clean up animation on unmount
+            spinAnimation.pause();
+        };
+    }, []);
 
     return (
         <View style={styles.container}>
-            <Animated.Image
-                source={require('../../assets/images/dumbell.png')} 
-                style={[
-                    styles.image,
-                    { width: size, height: size, transform: [{ rotate: spin }] },
-                ]}
+            <Image
+                ref={imageRef}  // Reference to the image element
+                source={require('../../assets/images/dumbell.png')}
+                style={[styles.image, { width: size, height: size }]}
                 resizeMode="contain"
             />
         </View>
@@ -43,4 +39,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    image: {
+        // Optional: Add any additional image styling here if needed
+    }
 });
