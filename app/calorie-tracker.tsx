@@ -13,8 +13,8 @@ export default function CalorieTracker() {
         setLoading(true);
 
         try {
-            const API_ID = '6184d7c9'; 
-            const API_KEY = '3258fa1fabbcb902d88f20f647bc2cba'; 
+            const API_ID = process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID; 
+            const API_KEY = process.env.EXPO_PUBLIC_NUTRITIONIX_API_KEY; 
 
             
             const response = await axios.get(
