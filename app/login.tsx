@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { useRouter } from 'expo-router';
 import { getUsers } from '../api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingAnimation from './components/LoadingAnimation'
+
 
 export default function LoginPage() {
     const [users, setUsers] = useState([]);
@@ -44,7 +46,7 @@ export default function LoginPage() {
         <View style={styles.container}>
             <Text style={styles.header}>Select User</Text>
             {loading ? (
-                <Text>Loading users...</Text>
+                <LoadingAnimation />
             ) : users.length > 0 ? (
                 <FlatList
                     data={users}

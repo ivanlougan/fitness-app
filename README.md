@@ -54,3 +54,4 @@ Join our community of developers creating universal apps.
 
 npm install axios
 npm install @react-native-async-storage/async-storage
+npm install animejs
