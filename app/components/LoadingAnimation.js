@@ -10,6 +10,7 @@ export default function LoadingDumbbell({ size = 50 }) {
                 toValue: 1,
                 duration: 1000, 
                 useNativeDriver: true,
+                loop: true,
             })
         );
         spinAnimation.start();
