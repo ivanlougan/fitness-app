@@ -83,7 +83,7 @@ export default function CalorieTracker() {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.result}>
-                        <Text style={styles.foodName}>{item.food_name}</Text>
+                        <Text style={styles.foodName}>{item.food_name.charAt(0).toUpperCase() + item.food_name.slice(1)}</Text>
                         <Text style={styles.calories}>
                             Calories: {item.calories !== 'N/A' ? `${item.calories} kcal` : 'N/A'}
                         </Text>
