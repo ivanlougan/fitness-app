@@ -64,22 +64,28 @@ export default function UserPage() {
                             uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
                         }}
                     />
-                    <Text style={styles.text}>Name: {user.name}</Text>
-                    <Text style={styles.text}>Age: {user.age}</Text>
-                    <Text style={styles.text}>Weight: {user.weight}</Text>
-                    <Text style={styles.text}>Height: {user.height}</Text>
-
+                    <View style={styles.userInfoSection}>
+                        <View style={styles.textSection}>
+                            <Text style={styles.textHeader}>User info:</Text>
+                            <Text style={styles.userInfoText}>Name: {user.name}</Text>
+                            <Text style={styles.userInfoText}>Age: {user.age}</Text>
+                            <Text style={styles.userInfoText}>Weight: {user.weight}</Text>
+                            <Text style={styles.userInfoText}>Height: {user.height}</Text>
+                        </View>
+                    </View>
                     <View style={styles.goalsSection}>
-                        <Text style={styles.goalsHeader}>Goals:</Text>
-                        {user.goals && user.goals.length > 0 ? (
-                            user.goals.map((goal, index) => (
-                                <Text key={index} style={styles.goalText}>
-                                    {goal}
-                                </Text>
-                            ))
-                        ) : (
-                            <Text style={styles.goalText}>No goals set</Text>
-                        )}
+                        <View style={styles.textSection}>
+                            <Text style={styles.textHeader}>Goals:</Text>
+                            {user.goals && user.goals.length > 0 ? (
+                                user.goals.map((goal, index) => (
+                                    <Text key={index} style={styles.goalText}>
+                                        {goal}
+                                    </Text>
+                                ))
+                            ) : (
+                                <Text style={styles.goalText}>No goals set</Text>
+                            )}
+                        </View>
 
                         {editing && (
                             <View>
@@ -96,8 +102,8 @@ export default function UserPage() {
                         )}
                     </View>
 
-                    <TouchableOpacity style={styles.editButton} onPress={() => setEditing(!editing)}>
-                        <Text style={styles.editButtonText}>{editing ? 'Cancel' : 'Add a Goal'}</Text>
+                    <TouchableOpacity style={styles.addButton} onPress={() => setEditing(!editing)}>
+                        <Text style={styles.addButtonText}>{editing ? 'Cancel' : 'Add a Goal'}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.logout} onPress={handleLogout}>
@@ -115,63 +121,99 @@ const styles = StyleSheet.create({
     scrollViewContainer: {
         flexGrow: 1,
         backgroundColor: '#FFF9FB',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
+        alignItems: 'center', 
+        justifyContent: 'flex-start',
+        paddingHorizontal: 20,
     },
     avatar: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 10,
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        marginBottom: 15,
+        marginTop: 40,
+        borderWidth: 3,
+        borderColor: '#4B88A2',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
     },
     text: {
         color: '#000',
-        fontSize: 20,
+        fontSize: 18,
         marginBottom: 10,
+        textAlign: 'center',
+    },
+    userInfoSection: {
+        marginBottom: 5,
+        alignItems: 'flex-start', 
+        backgroundColor: '#f2f2f2',
+        padding: 20,
+        borderRadius: 12,
+        width: '100%',
+        elevation: 3, 
+    },
+    userInfoText: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 8,
+        textAlign: 'left', 
+        width: '100%',
+    },
+    textSection: {
+        alignItems: 'flex-start', 
+        width: '150%', 
+        paddingHorizontal: 20,
     },
     goalsSection: {
         marginTop: 20,
         backgroundColor: '#f2f2f2',
-        padding: 15,
-        borderRadius: 10,
+        padding: 20,
+        borderRadius: 12,
         width: '100%',
-        marginBottom: 20,
+        marginBottom: 30,
+        elevation: 3, 
     },
-    goalsHeader: {
-        fontSize: 22,
+    textHeader: {
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#4B88A2',
-        marginBottom: 10,
+        marginBottom: 12,
+        textAlign: 'center',
     },
     goalText: {
         fontSize: 18,
         color: '#000',
-        marginBottom: 5,
+        marginBottom: 8,
+        textAlign: 'center',
     },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
-        padding: 10,
+        padding: 12,
         borderRadius: 8,
-        marginBottom: 10,
+        marginBottom: 12,
         fontSize: 16,
+        width: '100%',
     },
-    editButton: {
+    addButton: {
         backgroundColor: '#f0ad4e',
-        padding: 10,
-        borderRadius: 25,
+        padding: 12,
+        borderRadius: 30,
         marginBottom: 20,
+        alignSelf: 'center',
     },
-    editButtonText: {
+    addButtonText: {
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
+        textAlign: 'center',
     },
     saveButton: {
         backgroundColor: '#5cb85c',
-        padding: 10,
+        padding: 12,
         borderRadius: 8,
+        width: '100%',
     },
     saveButtonText: {
         color: '#fff',
@@ -180,13 +222,16 @@ const styles = StyleSheet.create({
     },
     logout: {
         backgroundColor: '#4B88A2',
-        padding: 10,
-        borderRadius: 25,
-        marginTop: 20,
+        padding: 12,
+        borderRadius: 30,
+        marginTop: 10,
+        width: '100%',
+        alignSelf: 'center',
     },
     logoutText: {
         color: '#fff',
         fontSize: 20,
         fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
