@@ -9,13 +9,15 @@ export default function BMI() {
     const [bmi, setBmi] = useState(null);
     const [status, setStatus] = useState('');
 
+    // Convert weight to kg (only supporting kg and lbs now)
     const convertWeightToKg = () => {
-        if (weightUnit === 'st') {
-            return parseFloat(weight) * 6.35029; // Convert stones to kg
+        if (weightUnit === 'lbs') {
+            return parseFloat(weight) * 0.453592; // Convert pounds to kg
         }
-        return parseFloat(weight); // Weight already in kg
+        return parseFloat(weight); // Weight is already in kg
     };
 
+    // Convert height to meters
     const convertHeightToMeters = () => {
         if (heightUnit === 'ft') {
             const [feet, inches = 0] = height.split('.').map(Number); // Split feet and inches
@@ -24,6 +26,7 @@ export default function BMI() {
         return parseFloat(height) / 100; // Convert cm to meters
     };
 
+    // Calculate BMI
     const calculateBMI = () => {
         const weightInKg = convertWeightToKg();
         const heightInMeters = convertHeightToMeters();
@@ -55,7 +58,7 @@ export default function BMI() {
             <View style={styles.inputRow}>
                 <TextInput
                     style={styles.input}
-                    placeholder={`Enter weight in ${weightUnit}`}
+                    placeholder={`Enter weight in ${weightUnit === 'kg' ? 'kg' : 'lbs'}`}
                     keyboardType="numeric"
                     value={weight}
                     onChangeText={(text) => setWeight(text)}
@@ -73,11 +76,11 @@ export default function BMI() {
                     <TouchableOpacity
                         style={[
                             styles.toggleButton,
-                            weightUnit === 'st' && styles.activeButton,
+                            weightUnit === 'lbs' && styles.activeButton,
                         ]}
-                        onPress={() => setWeightUnit('st')}
+                        onPress={() => setWeightUnit('lbs')}
                     >
-                        <Text style={styles.toggleText}>st</Text>
+                        <Text style={styles.toggleText}>lbs</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -86,7 +89,7 @@ export default function BMI() {
             <View style={styles.inputRow}>
                 <TextInput
                     style={styles.input}
-                    placeholder={`Enter height in ${heightUnit}`}
+                    placeholder={`Enter height in ${heightUnit === 'cm' ? 'cm' : 'ft (ft.inches)'}`}
                     keyboardType="numeric"
                     value={height}
                     onChangeText={(text) => setHeight(text)}
@@ -200,4 +203,3 @@ const styles = StyleSheet.create({
         color: '#333',
     },
 });
-
