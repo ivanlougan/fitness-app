@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 
 export default function MenuPage() {
     return (
+
         <View style={styles.container}>
             <View style={styles.row}>
                 <Link href="/bmi" style={[styles.button, styles.bmiButton]}>
@@ -16,6 +17,7 @@ export default function MenuPage() {
                 <Text style={styles.buttonText}>Progress</Text>
             </Link>
         </View>
+
     );
 }
 

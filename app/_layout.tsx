@@ -32,6 +32,8 @@ export default function RootLayout() {
             <Stack.Screen name="login" options={{ title: 'Login', headerShown: false }} />
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="user" options={{ title: 'User Page' }} />
+            <Stack.Screen name="bmi" options={{ title: "" }} />
+            <Stack.Screen name="calorie-tracker" options={{ title: "" }} />
         </Stack>
     );
 }

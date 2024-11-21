@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 
+export const options = {
+    headerTitle: ''
+}
+
 export default function BMI() {
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
