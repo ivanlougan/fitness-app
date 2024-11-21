@@ -25,5 +25,14 @@ const updateUserGoals = (userId, newGoal) => {
         });
 };
 
+const getWorkouts = () => {
+  return api.get('/workouts')
+    .then(({ data }) => {
+      return data.workouts; 
+    })
+    .catch((error) => {
+      throw error;
+    });
+};
 
-export {getUsers, updateUserGoals}
+export {getUsers, updateUserGoals, getWorkouts}
