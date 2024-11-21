@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default function CalorieTracker() {
     const [query, setQuery] = useState('');
-    const [amount, setAmount] = useState('100'); // Default amount (grams)
+    const [amount, setAmount] = useState('100'); 
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -17,7 +17,7 @@ export default function CalorieTracker() {
             const API_ID = process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID;
             const API_KEY = process.env.EXPO_PUBLIC_NUTRITIONIX_API_KEY;
 
-            // API call to search for the food
+            
             const response = await axios.get(
                 'https://trackapi.nutritionix.com/v2/search/instant',
                 {
