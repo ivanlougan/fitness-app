@@ -13,7 +13,7 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'home' : 'home-outline'} size={24} color={color} />
           )
         }} />
-        <Tabs.Screen name="menu" options={{ title: "Menu",
+        <Tabs.Screen name="menu" options={{ title: "Extras",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'list' : 'list-outline'} size={24} color={color} />
           )
