@@ -15,4 +15,15 @@ const getUsers = () => {
     });
 };
 
-export {getUsers}
+const updateUserGoals = (userId, newGoal) => {
+    return api
+        .patch(`/users/${userId}`, { goal: newGoal })
+        .then(({ data }) => data.user) 
+        .catch((error) => {
+            console.error('Failed to update goals:', error);
+            throw error;
+        });
+};
+
+
+export {getUsers, updateUserGoals}
