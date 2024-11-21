@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import axios from 'axios';
+import LoadingAnimation from './components/LoadingAnimation';  
 
 export default function CalorieTracker() {
     const [query, setQuery] = useState('');
-    const [amount, setAmount] = useState('100'); 
+    const [amount, setAmount] = useState('100');
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -17,7 +18,6 @@ export default function CalorieTracker() {
             const API_ID = process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID;
             const API_KEY = process.env.EXPO_PUBLIC_NUTRITIONIX_API_KEY;
 
-            
             const response = await axios.get(
                 'https://trackapi.nutritionix.com/v2/search/instant',
                 {
@@ -94,7 +94,13 @@ export default function CalorieTracker() {
             <TouchableOpacity onPress={searchFood} style={styles.searchButton}>
                 <Text style={styles.searchButtonText}>Search</Text>
             </TouchableOpacity>
-            {loading && <ActivityIndicator size="large" color="#4B88A2" />}
+
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <LoadingAnimation size={50} />  
+                </View>
+            )}
+
             <FlatList
                 data={results}
                 keyExtractor={(item, index) => index.toString()}
@@ -122,6 +128,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF9FB',
         alignItems: 'center',
         padding: 20,
+        position: 'relative', 
     },
     title: {
         fontSize: 24,
@@ -186,5 +193,12 @@ const styles = StyleSheet.create({
     servingInfo: {
         fontSize: 14,
         color: '#555',
+    },
+    loadingContainer: {
+        position: 'absolute',  
+        top: '25%',  
+        left: '50%',
+        transform: [{ translateX: -25 }],  
+        zIndex: 1,  
     },
 });
