@@ -1,32 +1,35 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
-import anime from 'animejs/lib/anime.es.js';  
+import { View, Image, StyleSheet, Animated, Easing } from 'react-native';
 
 export default function LoadingDumbbell({ size = 50 }) {
-    const imageRef = useRef(null);
+    const rotation = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-       
-        const spinAnimation = anime({
-            targets: imageRef.current,
-            rotate: '360deg', 
-            duration: 1000, 
-            loop: true, 
-            easing: 'linear', 
-        });
+        const rotate = Animated.loop(
+            Animated.timing(rotation, {
+                toValue: 1,
+                duration: 1000,
+                easing: Easing.linear, // Correctly reference Easing here
+                useNativeDriver: true,
+            })
+        );
+        rotate.start();
 
         return () => {
-           
-            spinAnimation.pause();
+            rotate.stop();
         };
-    }, []);
+    }, [rotation]);
+
+    const rotationInterpolated = rotation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '360deg'],
+    });
 
     return (
         <View style={styles.container}>
-            <Image
-                ref={imageRef}  
+            <Animated.Image
                 source={require('../../assets/images/dumbell.png')}
-                style={[styles.image, { width: size, height: size }]}
+                style={[styles.image, { width: size, height: size, transform: [{ rotate: rotationInterpolated }] }]}
                 resizeMode="contain"
             />
         </View>
