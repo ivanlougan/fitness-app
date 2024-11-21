@@ -4,6 +4,7 @@ import axios from 'axios';
 
 export default function CalorieTracker() {
     const [query, setQuery] = useState('');
+    const [amount, setAmount] = useState('100'); // Default amount (grams)
     const [results, setResults] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -13,10 +14,10 @@ export default function CalorieTracker() {
         setLoading(true);
 
         try {
-            const API_ID = process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID; 
-            const API_KEY = process.env.EXPO_PUBLIC_NUTRITIONIX_API_KEY; 
+            const API_ID = process.env.EXPO_PUBLIC_NUTRITIONIX_APP_ID;
+            const API_KEY = process.env.EXPO_PUBLIC_NUTRITIONIX_API_KEY;
 
-            
+            // API call to search for the food
             const response = await axios.get(
                 'https://trackapi.nutritionix.com/v2/search/instant',
                 {
@@ -30,7 +31,6 @@ export default function CalorieTracker() {
 
             const commonFoods = response.data.common;
 
-            
             const detailedResults = await Promise.all(
                 commonFoods.map(async (food) => {
                     try {
@@ -45,12 +45,15 @@ export default function CalorieTracker() {
                                 },
                             }
                         );
+
+                        const foodData = nutritionResponse.data.foods[0];
                         return {
                             ...food,
-                            calories: nutritionResponse.data.foods[0]?.nf_calories || 'N/A',
+                            caloriesPerGram: foodData?.nf_calories / foodData?.serving_weight_grams || 0,
+                            servingWeight: foodData?.serving_weight_grams || 1,
                         };
                     } catch {
-                        return { ...food, calories: 'N/A' };
+                        return { ...food, caloriesPerGram: 0, servingWeight: 1 };
                     }
                 })
             );
@@ -64,16 +67,30 @@ export default function CalorieTracker() {
         }
     };
 
+    const calculateCalories = (item) => {
+        const userAmount = parseFloat(amount) || 0;
+        return (item.caloriesPerGram * userAmount).toFixed(2);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Calorie Tracker</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Search for food..."
-                value={query}
-                onChangeText={(text) => setQuery(text)}
-                onSubmitEditing={searchFood}
-            />
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Search for food..."
+                    value={query}
+                    onChangeText={(text) => setQuery(text)}
+                    onSubmitEditing={searchFood}
+                />
+                <TextInput
+                    style={styles.amountInput}
+                    placeholder="Amount (g)"
+                    value={amount}
+                    onChangeText={(text) => setAmount(text)}
+                    keyboardType="numeric"
+                />
+            </View>
             <TouchableOpacity onPress={searchFood} style={styles.searchButton}>
                 <Text style={styles.searchButtonText}>Search</Text>
             </TouchableOpacity>
@@ -83,9 +100,14 @@ export default function CalorieTracker() {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View style={styles.result}>
-                        <Text style={styles.foodName}>{item.food_name.charAt(0).toUpperCase() + item.food_name.slice(1)}</Text>
+                        <Text style={styles.foodName}>
+                            {item.food_name.charAt(0).toUpperCase() + item.food_name.slice(1)}
+                        </Text>
                         <Text style={styles.calories}>
-                            Calories: {item.calories !== 'N/A' ? `${item.calories} kcal` : 'N/A'}
+                            Calories: {calculateCalories(item)} kcal
+                        </Text>
+                        <Text style={styles.servingInfo}>
+                            Serving Weight: {item.servingWeight}g | Per Gram: {item.caloriesPerGram.toFixed(2)} kcal
                         </Text>
                     </View>
                 )}
@@ -107,14 +129,30 @@ const styles = StyleSheet.create({
         color: '#000',
         marginBottom: 20,
     },
-    input: {
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
         width: '100%',
+    },
+    input: {
+        flex: 2,
         height: 40,
         borderColor: '#4B88A2',
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 10,
-        marginBottom: 10,
+        marginRight: 5,
+        backgroundColor: '#FFF',
+    },
+    amountInput: {
+        flex: 1,
+        height: 40,
+        borderColor: '#4B88A2',
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        textAlign: 'center',
         backgroundColor: '#FFF',
     },
     searchButton: {
@@ -143,5 +181,10 @@ const styles = StyleSheet.create({
     calories: {
         fontSize: 16,
         color: '#333',
+        marginVertical: 5,
+    },
+    servingInfo: {
+        fontSize: 14,
+        color: '#555',
     },
 });
