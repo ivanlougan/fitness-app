@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native'
 import { Link } from 'expo-router';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
+import LoadingAnimation from '../components/LoadingAnimation'
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);

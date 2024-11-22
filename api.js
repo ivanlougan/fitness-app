@@ -1,5 +1,6 @@
 import axios from "axios"
 
+
 const api = axios.create({
     baseURL: 'https://be-fitness-app.onrender.com/api/'
 })
@@ -31,19 +32,20 @@ const getWorkouts = () => {
       });
 };
 
-const getWorkoutLevels = (level) => {
+
+
+const getLevelExercises = (level) => {
   return api.get(`/workouts/${level}`)
-      .then(({ data }) => {
-          console.log('Fetched workout:', data);  
-          if (!data.workout) {
-              throw new Error(`No workout found for level ${level}`);
-          }
-          return data.workout;
-      })
-      .catch((error) => {
-          console.error(`Error fetching workout for level ${level}:`, error); 
-          throw new Error(`Error fetching workout for level ${level}. Please try again later.`);
-      });
+    .then(({ data }) => {
+      console.log(data.workout.exercises, '<<<<'); 
+      return data.workout.exercises;  
+    })
+    .catch((error) => {
+      console.error(error, '<<<<')
+      throw new Error(`Error fetching workouts for level ${level}. Please try again later`);
+    });
 };
 
-export {getUsers, updateUserGoals, getWorkouts, getWorkoutLevels}
+
+
+export {getUsers, updateUserGoals, getWorkouts, getLevelExercises }
