@@ -224,8 +224,8 @@ const styles = StyleSheet.create({
     },
     amountInput: {
         height: 40,
-        width: 80, // Defined width to make the input aligned
-        borderColor: 'transparent', // Remove extra border color
+        width: 80, 
+        borderColor: 'transparent', 
         borderWidth: 0,
         paddingHorizontal: 10,
         textAlign: 'center',
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginLeft: 5,
-        paddingRight: 10, // Ensure spacing on the right side
+        paddingRight: 10, 
     },
     searchButton: {
         backgroundColor: '#4B88A2',
