@@ -5,7 +5,7 @@ import LoadingAnimation from './components/LoadingAnimation';
 
 export default function CalorieTracker() {
     const [query, setQuery] = useState('');
-    const [amount, setAmount] = useState('100'); // Default amount
+    const [amount, setAmount] = useState('100');
     const [results, setResults] = useState([]);
     const [selectedFoods, setSelectedFoods] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -96,7 +96,7 @@ export default function CalorieTracker() {
     };
 
     const resetFoods = () => {
-        setSelectedFoods([]); // Clear the selected foods list
+        setSelectedFoods([]); 
     };
 
     const calculateTotalCalories = () => {

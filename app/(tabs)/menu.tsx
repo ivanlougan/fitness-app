@@ -3,7 +3,6 @@ import { Link } from 'expo-router';
 
 export default function MenuPage() {
     return (
-
         <View style={styles.container}>
             <View style={styles.row}>
                 <Link href="/bmi" style={[styles.button, styles.bmiButton]}>
@@ -17,7 +16,6 @@ export default function MenuPage() {
                 <Text style={styles.buttonText}>Progress</Text>
             </Link>
         </View>
-
     );
 }
 
@@ -31,33 +29,39 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 5, 
+        marginBottom: 5,
     },
     button: {
-        justifyContent: 'center', 
-        alignItems: 'center',  
+        justifyContent: 'center',
+        alignItems: 'center',
         borderRadius: 15,
     },
     bmiButton: {
         backgroundColor: '#4B88A2',
         width: '48%',
-        aspectRatio: 1, 
+        aspectRatio: 1,
     },
     calButton: {
         backgroundColor: '#4B88A2',
         width: '48%',
-        aspectRatio: 1, 
+        aspectRatio: 1,
+    },
+    cookButton: {
+        backgroundColor: '#4B88A2',
+        width: '100%',
+        height: '25%', 
+        marginTop: 10,
     },
     progressButton: {
         backgroundColor: '#4B88A2',
         width: '100%',
-        height: '25%', 
-        marginTop: 10, 
+        height: '25%',
+        marginTop: 20, 
     },
     buttonText: {
         color: '#FFF',
         fontSize: 18,
         fontWeight: 'bold',
-        padding: 10
+        padding: 10,
     },
 });
