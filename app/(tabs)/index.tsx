@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 import Header from '../components/Header';
-import { getWorkouts } from '../../api'; 
+import { getWorkouts } from '../../api';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -35,12 +34,11 @@ export default function WorkoutLevelsPage() {
         {workouts.map((workout, index) => (
           <View key={index} style={styles.levelCard}>
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
-            <Button
-              title="Start Workout"
-              onPress={() =>
-                router.push(`/workouts/${workout.level}`) 
-              }
-            />
+            <Link href={`/workouts/${workout.level}`} style={styles.link}>
+              <View style={styles.buttonWrapper}>
+                <Button title="Start Workout" />
+              </View>
+            </Link>
           </View>
         ))}
       </View>
@@ -50,11 +48,12 @@ export default function WorkoutLevelsPage() {
 
 const styles = StyleSheet.create({
   scrollContainer: {
-    flexGrow: 1,  
+    flexGrow: 1,
     backgroundColor: '#FFF9FB',
   },
   levelsContainer: {
     padding: 20,
+    alignItems: 'center',
   },
   levelCard: {
     marginBottom: 20,
@@ -62,11 +61,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
     alignItems: 'center',
+    width: '90%',
   },
   levelTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  link: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  buttonWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   loading: {
     textAlign: 'center',
@@ -74,3 +83,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+

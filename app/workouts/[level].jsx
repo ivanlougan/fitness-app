@@ -1,19 +1,28 @@
+import { useRouter } from 'expo-router';
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useSearchParams } from 'expo-router';
-import { getWorkoutLevels } from '../api'; 
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { getWorkoutLevels } from '../../api';
 
 export default function WorkoutExercises() {
-    const { level } = useSearchParams(); 
+    const router = useRouter();
+    const { query } = router;
+    const level = query?.level;
+
     const [workout, setWorkout] = useState(null);
     const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        getWorkoutLevels(level)
-            .then((data) => setWorkout(data))
-            .catch((error) => console.error("Error fetching workout:", error.message))
-            .finally(() => setLoading(false));
+        if (level) {
+            getWorkoutLevels(level)
+                .then((data) => {
+                    setWorkout(data);
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    setLoading(false);
+                });
+        }
     }, [level]);
 
     if (loading) {

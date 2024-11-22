@@ -1,11 +1,12 @@
-import { Stack } from 'expo-router';
+import { Text } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RootLayout() {
     const router = useRouter();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(null);
 
     useEffect(() => {
         const checkUserLoginStatus = async () => {
@@ -22,10 +23,14 @@ export default function RootLayout() {
     }, []);
 
     useEffect(() => {
-        if (!isLoggedIn) {
-            router.replace('/login'); 
+        if (isLoggedIn === false) {
+            router.replace('/login');
         }
     }, [isLoggedIn, router]);
+
+    if (isLoggedIn === null) {
+        return <Text>Loading...</Text>;
+    }
 
     return (
         <Stack>
@@ -37,3 +42,4 @@ export default function RootLayout() {
         </Stack>
     );
 }
+
