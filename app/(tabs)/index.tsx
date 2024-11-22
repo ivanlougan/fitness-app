@@ -1,77 +1,76 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { Link } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
 import Header from '../components/Header';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { getWorkouts } from '../../api'; 
 
-export default function HomePage() {
-    return (
-        <View style={styles.container}>
-            <Header title="FitnessApp" /> 
+export default function WorkoutLevelsPage() {
+  const [workouts, setWorkouts] = useState([]);
+  const router = useRouter();
 
-            <View style={styles.content}>
-                <View style={styles.section}>
-                    <Ionicons name="stats-chart" size={40} color="#4CAF50" />
-                    <Text style={styles.text}>Progress</Text>
-                    <Link href="/progress" style={styles.link}>View Progress</Link>
-                    <View style={styles.traceLine} />
-                </View>
+  useEffect(() => {
+    const fetchWorkouts = async () => {
+      try {
+        const fetchedWorkouts = await getWorkouts();
+        if (Array.isArray(fetchedWorkouts)) {
+          setWorkouts(fetchedWorkouts);
+        } else {
+          throw new Error('Workouts data is not an array');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Could not load workout levels');
+      }
+    };
+    fetchWorkouts();
+  }, []);
 
-                <View style={styles.section}>
-                    <Ionicons name="barbell" size={40} color="#FF9800" />
-                    <Text style={styles.text}>Today's Workout</Text>
-                    <Link href="/workout" style={styles.link}>Start Workout</Link>
-                    <View style={styles.traceLine} />
-                </View>
+  if (workouts.length === 0) {
+    return <Text style={styles.loading}>Loading...</Text>;
+  }
 
-                <View style={styles.section}>
-                    <Ionicons name="calendar" size={40} color="#2196F3" />
-                    <Text style={styles.text}>Tomorrow's Workout</Text>
-                    <Link href="/plan" style={styles.link}>View exercises</Link>
-                </View>
-            </View>
-        </View>
-    );
+  return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Header title="Workout Levels" />
+      <View style={styles.levelsContainer}>
+        {workouts.map((workout, index) => (
+          <View key={index} style={styles.levelCard}>
+            <Text style={styles.levelTitle}>Level: {workout.level}</Text>
+            <Button
+              title="Start Workout"
+              onPress={() =>
+                router.push(`/workouts/${workout.level}`) 
+              }
+            />
+          </View>
+        ))}
+      </View>
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFF9FB',
-        paddingTop: 50,
-    },
-    content: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
-        marginTop: 110,
-        marginBottom: 50,
-    },
-    section: {
-        alignItems: 'center',
-        marginBottom: 65,
-        position: 'relative',
-    },
-    text: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#252627',
-        marginTop: 10,
-    },
-    link: {
-        fontSize: 16,
-        color: '#4B88A2',
-        textDecorationLine: 'underline',
-        marginTop: 5,
-    },
-    traceLine: {
-        width: 2,
-        height: 50,
-        backgroundColor: '#D3D4D9',
-        position: 'absolute',
-        top: '100%', 
-        transform: [{ translateY: 10 }], 
-    },
+  scrollContainer: {
+    flexGrow: 1,  
+    backgroundColor: '#FFF9FB',
+  },
+  levelsContainer: {
+    padding: 20,
+  },
+  levelCard: {
+    marginBottom: 20,
+    padding: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  levelTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  loading: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 20,
+  },
 });
-

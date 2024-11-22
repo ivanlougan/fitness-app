@@ -1,117 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, Alert, StyleSheet } from 'react-native';
-import { getWorkouts } from '../api';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Link } from 'expo-router'; 
+import { getWorkouts } from '../api'; 
 
-const WorkoutPage = () => {
-  const [workouts, setWorkouts] = useState([]);
-  const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [loading, setLoading] = useState(true); 
+export default function WorkoutLevels() {
+    const [levels, setLevels] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        setLoading(true); 
-        const fetchedWorkouts = await getWorkouts();
+    useEffect(() => {
+        getWorkouts()
+            .then((fetchedWorkouts) => {
+                const availableLevels = fetchedWorkouts.map(workout => workout.level); 
+                setLevels(availableLevels); 
+            })
+            .catch((error) => {
+                console.error("Error fetching workouts:", error.message);
+            })
+            .finally(() => {
+                setLoading(false); 
+            });
+    }, []); 
 
-        if (Array.isArray(fetchedWorkouts)) {
-          setWorkouts(fetchedWorkouts);  
-        } else {
-          throw new Error('Workouts data is not an array');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Could not load workouts');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWorkouts();
-  }, []);
-
-  const finishExercise = () => {
-    const workout = workouts[currentWorkoutIndex];
-    
-    if (currentExerciseIndex < workout.exercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1); 
-    } else if (currentWorkoutIndex < workouts.length - 1) {
-      setCurrentWorkoutIndex(currentWorkoutIndex + 1); 
-      setCurrentExerciseIndex(0); 
-    } else {
-      console.log("All exercises and workouts are finished!");
-      Alert.alert('Finished', 'You have completed all exercises and workouts.');
+    if (loading) {
+        return (
+            <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#4CAF50" />
+            </View>
+        );
     }
-  };
 
-  const previousExercise = () => {
-    if (currentExerciseIndex > 0) {
-      setCurrentExerciseIndex(currentExerciseIndex - 1); 
-    } else if (currentWorkoutIndex > 0) {
-      setCurrentWorkoutIndex(currentWorkoutIndex - 1); 
-      const prevWorkout = workouts[currentWorkoutIndex - 1];
-      setCurrentExerciseIndex(prevWorkout.exercises.length - 1); 
+    if (!levels.length) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>No workout levels found.</Text>
+            </View>
+        );
     }
-  };
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
-  const workout = workouts[currentWorkoutIndex];
-  const exercise = workout?.exercises?.[currentExerciseIndex];
-
-  if (!exercise) {
-    return <Text>No exercises available.</Text>;
-  }
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.workoutLevel}>Workout Level: {workout.level}</Text>
-      <Text style={styles.exerciseName}>Exercise: {exercise.name}</Text>
-      <Text style={styles.description}>Description: {exercise.description}</Text>
-      <Text style={styles.duration}>Duration: {exercise.duration_in_seconds} seconds</Text>
-      <Text style={styles.xp}>XP: {exercise.xp} points</Text>
-
-      <View style={styles.buttonContainer}>
-        {currentExerciseIndex > 0 || currentWorkoutIndex > 0 ? (
-          <Button title="Previous Exercise" onPress={previousExercise} />
-        ) : null}
-        <Button title="Finish Exercise" onPress={finishExercise} />
-      </View>
-    </View>
-  );
-};
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Select Your Workout Level</Text>
+            {levels.map((level) => (
+                <Link
+                    key={level} 
+                    href={`/workouts/${level}`} 
+                    style={styles.levelButton} 
+                >
+                    <Text style={styles.levelText}>Level {level}</Text>
+                </Link>
+            ))}
+        </View>
+    );
+}
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-  },
-  workoutLevel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  exerciseName: {
-    fontSize: 16,
-    marginVertical: 10,
-  },
-  description: {
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  duration: {
-    fontSize: 14,
-    marginBottom: 20,
-  },
-  xp: {
-    fontSize: 14,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFF9FB',
+        padding: 20,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    levelButton: {
+        backgroundColor: '#4CAF50',
+        padding: 15,
+        marginVertical: 10,
+        borderRadius: 5,
+        width: '80%',
+        alignItems: 'center',
+    },
+    levelText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        fontSize: 18,
+        color: '#E57373',
+    },
 });
 
-export default WorkoutPage;
 
