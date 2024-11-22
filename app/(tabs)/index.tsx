@@ -30,7 +30,7 @@ export default function WorkoutLevelsPage() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Header title="Workout Levels" />
+      <Header title="FitnessApp" />
       <View style={styles.levelsContainer}>
         {workouts.map((workout, index) => (
           <View key={index} style={styles.levelCard}>
