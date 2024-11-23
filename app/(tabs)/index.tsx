@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
-import LoadingAnimation from '../components/LoadingAnimation';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
@@ -41,7 +40,9 @@ export default function WorkoutLevelsPage() {
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
             <Link href={`/workouts/${workout.level}`} style={styles.link}>
               <View style={styles.buttonWrapper}>
-                <Button title="Start Workout" color="#4B88A2" />
+                <TouchableOpacity style={styles.circularButton}>
+                  <Text style={styles.buttonText}>Start Workout</Text>
+                </TouchableOpacity>
               </View>
             </Link>
           </View>
@@ -66,15 +67,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 20,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    alignItems: 'center',
+    borderRadius: 50,
+    alignItems: 'center', 
+    justifyContent: 'center', 
     width: '100%',
     maxWidth: 350,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 4,
   },
   levelTitle: {
     fontSize: 20,
@@ -86,10 +83,25 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonWrapper: {
+    width: '100%', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+  },
+  circularButton: {
+    backgroundColor: '#4B88A2',
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 50, 
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
+    width: 200, 
     marginTop: 10,
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
@@ -103,4 +115,3 @@ const styles = StyleSheet.create({
     color: '#4B88A2',
   },
 });
-
