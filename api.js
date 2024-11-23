@@ -37,11 +37,9 @@ const getWorkouts = () => {
 const getLevelExercises = (level) => {
   return api.get(`/workouts/${level}`)
     .then(({ data }) => {
-      console.log(data.workout.exercises, '<<<<'); 
       return data.workout.exercises;  
     })
-    .catch((error) => {
-      console.error(error, '<<<<')
+    .catch(() => {
       throw new Error(`Error fetching workouts for level ${level}. Please try again later`);
     });
 };

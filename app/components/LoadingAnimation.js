@@ -9,7 +9,7 @@ export default function LoadingDumbbell({ size = 50 }) {
             Animated.timing(rotation, {
                 toValue: 1,
                 duration: 1000,
-                easing: Easing.linear, // Correctly reference Easing here
+                easing: Easing.linear, 
                 useNativeDriver: true,
             })
         );

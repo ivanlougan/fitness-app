@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button, Alert, ScrollView } from 'react-native'
 import { Link } from 'expo-router';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
-import LoadingAnimation from '../components/LoadingAnimation'
+import LoadingAnimation from '../components/LoadingAnimation';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
@@ -25,7 +25,11 @@ export default function WorkoutLevelsPage() {
   }, []);
 
   if (workouts.length === 0) {
-    return <Text style={styles.loading}>Loading...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -37,7 +41,7 @@ export default function WorkoutLevelsPage() {
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
             <Link href={`/workouts/${workout.level}`} style={styles.link}>
               <View style={styles.buttonWrapper}>
-                <Button title="Start Workout" />
+                <Button title="Start Workout" color="#4B88A2" />
               </View>
             </Link>
           </View>
@@ -51,37 +55,52 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     backgroundColor: '#FFF9FB',
+    paddingHorizontal: 20,
+    paddingBottom: 30,
   },
   levelsContainer: {
-    padding: 20,
     alignItems: 'center',
+    paddingTop: 20,
   },
   levelCard: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     alignItems: 'center',
-    width: '90%',
+    width: '100%',
+    maxWidth: 350,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 4,
   },
   levelTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#333',
     marginBottom: 10,
   },
   link: {
     width: '100%',
-    alignItems: 'center',
   },
   buttonWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    marginTop: 10,
   },
-  loading: {
-    textAlign: 'center',
-    fontSize: 16,
-    marginTop: 20,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF9FB',
+  },
+  loadingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#4B88A2',
   },
 });
 
