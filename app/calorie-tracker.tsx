@@ -25,7 +25,7 @@ export default function CalorieTracker() {
                     headers: {
                         'x-app-id': API_ID,
                         'x-app-key': API_KEY,
-                    },
+                    }, 
                     params: { query },
                 }
             );

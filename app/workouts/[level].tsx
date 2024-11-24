@@ -62,7 +62,7 @@ export default function Exercises() {
           <Text style={styles.summaryText}>Exercises:</Text>
           <FlatList
             data={exercises}
-            keyExtractor={(item) => String(item.id)}
+            keyExtractor={(item, index) => String(item.id) + String(index)}
             renderItem={({ item }) => (
               <Text style={styles.exerciseItem}>{item.name}</Text>
             )}
