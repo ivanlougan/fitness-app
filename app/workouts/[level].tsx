@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
 import { getLevelExercises } from '../../api';
 import { useLocalSearchParams } from 'expo-router';
 
@@ -9,6 +9,7 @@ export default function Exercises() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [workoutStarted, setWorkoutStarted] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -23,14 +24,24 @@ export default function Exercises() {
       });
   }, [level]);
 
+  
+  const totalDuration = exercises.reduce((acc, exercise) => acc + exercise.duration_in_seconds, 0);
+
+  
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     }
   };
 
+
   const handleFinish = () => {
     alert('Congratulations! You have completed the workout!');
+  };
+
+  
+  const handleStartWorkout = () => {
+    setWorkoutStarted(true);
   };
 
   if (isLoading) {
@@ -41,6 +52,30 @@ export default function Exercises() {
     return <Text style={styles.error}>{error}</Text>;
   }
 
+  if (!workoutStarted) {
+
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Workout Overview</Text>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryText}>Total Duration: {totalDuration} seconds</Text>
+          <Text style={styles.summaryText}>Exercises:</Text>
+          <FlatList
+            data={exercises}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <Text style={styles.exerciseItem}>{item.name}</Text>
+            )}
+          />
+          <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
+            <Text style={styles.buttonText}>Start Workout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+ 
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
@@ -83,6 +118,38 @@ const styles = StyleSheet.create({
     color: '#4B88A2',
     marginBottom: 20,
     textAlign: 'center',
+  },
+  summaryCard: {
+    padding: 20,
+    marginVertical: 20,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 3,
+    alignItems: 'center',
+    width: '90%',
+  },
+  summaryText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  exerciseItem: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+    textAlign: 'left',
+  },
+  startButton: {
+    backgroundColor: '#5cb85c',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    marginTop: 20,
   },
   exerciseCard: {
     padding: 20,
