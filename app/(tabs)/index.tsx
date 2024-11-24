@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router'; // Use this for navigation
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
+  const router = useRouter(); // Initialize the router
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -38,13 +39,14 @@ export default function WorkoutLevelsPage() {
         {workouts.map((workout, index) => (
           <View key={index} style={styles.levelCard}>
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
-            <Link href={`/workouts/${workout.level}`} style={styles.link}>
-              <View style={styles.buttonWrapper}>
-                <TouchableOpacity style={styles.circularButton}>
-                  <Text style={styles.buttonText}>Start Workout</Text>
-                </TouchableOpacity>
-              </View>
-            </Link>
+            <View style={styles.buttonWrapper}>
+              <TouchableOpacity
+                style={styles.circularButton}
+                onPress={() => router.push(`/workouts/${workout.level}`)}
+              >
+                <Text style={styles.buttonText}>Start Workout</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </View>
@@ -67,35 +69,37 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     padding: 20,
     backgroundColor: '#FFFFFF',
-    borderRadius: 50,
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    width: '100%',
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '90%',
     maxWidth: 350,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 3,
   },
   levelTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
-  },
-  link: {
-    width: '100%',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   buttonWrapper: {
-    width: '100%', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
   },
   circularButton: {
     backgroundColor: '#4B88A2',
     paddingVertical: 15,
     paddingHorizontal: 25,
-    borderRadius: 50, 
+    borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 200, 
-    marginTop: 10,
+    minWidth: 150,
   },
   buttonText: {
     color: '#FFF',
