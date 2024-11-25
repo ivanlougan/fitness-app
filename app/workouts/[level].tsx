@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
 import { getLevelExercises } from '../../api';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router'; // Import useRouter
 
 export default function Exercises() {
   const { level } = useLocalSearchParams();
+  const router = useRouter(); // Initialize the router
   const [exercises, setExercises] = useState([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [error, setError] = useState('');
@@ -24,24 +25,20 @@ export default function Exercises() {
       });
   }, [level]);
 
-  
   const totalDuration = exercises.reduce((acc, exercise) => acc + exercise.duration_in_seconds, 0);
 
-  
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
       setCurrentExerciseIndex(currentExerciseIndex + 1);
     }
   };
 
-
-  const handleFinish = () => {
-    alert('Congratulations! You have completed the workout!');
-  };
-
-  
   const handleStartWorkout = () => {
     setWorkoutStarted(true);
+  };
+
+  const handleFinishWorkout = () => {
+    router.push('/results');
   };
 
   if (isLoading) {
@@ -53,7 +50,6 @@ export default function Exercises() {
   }
 
   if (!workoutStarted) {
-
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Workout Overview</Text>
@@ -75,7 +71,6 @@ export default function Exercises() {
     );
   }
 
- 
   const currentExercise = exercises[currentExerciseIndex];
 
   return (
@@ -95,7 +90,7 @@ export default function Exercises() {
             <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={styles.finishButton} onPress={handleFinish}>
+          <TouchableOpacity style={styles.finishButton} onPress={handleFinishWorkout}>
             <Text style={styles.buttonText}>Finish</Text>
           </TouchableOpacity>
         )}

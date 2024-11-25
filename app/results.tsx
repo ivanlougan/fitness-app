@@ -1,6 +1,13 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router'; 
 
 export default function ResultPage() {
+    const router = useRouter(); 
+
+    const handleFinish = () => {
+        router.push('/'); 
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Results:</Text>
@@ -9,7 +16,7 @@ export default function ResultPage() {
             <TouchableOpacity style={styles.shareButton}>
                 <Text style={styles.buttonText}>Share results</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={handleFinish}>
                 <Text style={styles.buttonText}>Finish</Text>
             </TouchableOpacity>
         </View>
