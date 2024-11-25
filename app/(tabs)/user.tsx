@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView,
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addGoal, deleteGoal, getUsers } from '../../api';
+import { Ionicons } from 'react-native-vector-icons'; 
 
 export default function UserPage() {
     const router = useRouter();
@@ -124,10 +125,10 @@ export default function UserPage() {
                                     <View key={index} style={styles.goalContainer}>
                                         <Text style={styles.goalText}>{goal}</Text>
                                         <TouchableOpacity style={styles.editButton} onPress={() => handleEditGoal(index)}>
-                                            <Text style={styles.editButtonText}>Edit</Text>
+                                            <Ionicons name="pencil" size={24} color="#fff" />
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteGoal(goal)}>
-                                            <Text style={styles.deleteButtonText}>Delete</Text>
+                                            <Ionicons name="trash" size={24} color="#fff" />
                                         </TouchableOpacity>
                                     </View>
                                 ))
@@ -299,25 +300,17 @@ const styles = StyleSheet.create({
     },
     editButton: {
         backgroundColor: '#5cb85c',
-        paddingVertical: 5,
-        paddingHorizontal: 15,
-        borderRadius: 8,
+        paddingVertical: 2,
+        paddingHorizontal: 5,
+        borderRadius: 5,
         marginLeft: 5,
-    },
-    editButtonText: {
-        color: '#fff',
-        fontSize: 14,
     },
     deleteButton: {
         backgroundColor: '#d9534f',
-        paddingVertical: 5,
-        paddingHorizontal: 15,
-        borderRadius: 8,
+        paddingVertical: 2,
+        paddingHorizontal: 5,
+        borderRadius: 5,
         marginLeft: 5,
-    },
-    deleteButtonText: {
-        color: '#fff',
-        fontSize: 14,
     },
     resetButton: {
         backgroundColor: '#4B88A2',

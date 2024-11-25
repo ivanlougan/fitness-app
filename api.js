@@ -40,14 +40,6 @@ const deleteGoal = (userId, goal) => {
         });
 };
 
-const updateUserGoals = (userId, newGoal) => {
-    return api.patch(`/users/${userId}`, { goal: newGoal })
-        .then(({ data }) => data.user)
-        .catch((error) => {
-            throw error;
-        });
-};
-
 const getWorkouts = () => {
     return api.get('/workouts')
         .then(({ data }) => data.workouts)
