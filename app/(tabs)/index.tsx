@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router'; // Use this for navigation
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
   const router = useRouter(); // Initialize the router
+  const [progress, setProgress] = useState({});
 
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
         const fetchedWorkouts = await getWorkouts();
+        const savedProgress = await AsyncStorage.getItem('workoutProgress');
+        setProgress(savedProgress ? JSON.parse(savedProgress) : {}); 
         if (Array.isArray(fetchedWorkouts)) {
           setWorkouts(fetchedWorkouts);
         } else {
@@ -32,6 +36,16 @@ export default function WorkoutLevelsPage() {
     );
   }
 
+  const getButtonText = (level) => {
+    if (progress[level]?.completed) return 'Completed';
+    if (progress[level]?.currentExerciseIndex >= 0) return 'Resume Workout';
+    return 'Start Workout';
+  };
+
+  const handleWorkoutPress = (level) => {
+    router.push(`/workouts/${level}`);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Header title="FitnessApp" />
@@ -41,10 +55,14 @@ export default function WorkoutLevelsPage() {
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
             <View style={styles.buttonWrapper}>
               <TouchableOpacity
-                style={styles.circularButton}
-                onPress={() => router.push(`/workouts/${workout.level}`)}
+                style={[
+                  styles.circularButton,
+                  progress[workout.level]?.completed && styles.disabledButton,
+                ]}
+                onPress={() => handleWorkoutPress(workout.level)}
+                disabled={progress[workout.level]?.completed}
               >
-                <Text style={styles.buttonText}>Start Workout</Text>
+                <Text style={styles.buttonText}>{getButtonText(workout.level)}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -117,5 +135,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#4B88A2',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
   },
 });

@@ -1,74 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { getLevelExercises } from '../../api';
-import { useLocalSearchParams, useRouter } from 'expo-router'; // Import useRouter
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 export default function Exercises() {
   const { level } = useLocalSearchParams();
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
   const [exercises, setExercises] = useState([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [workoutStarted, setWorkoutStarted] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    getLevelExercises(level)
-      .then((exercisesData) => {
-        setIsLoading(false);
-        setExercises(exercisesData);
-      })
-      .catch(() => {
-        setIsLoading(false);
-        setError('Error fetching exercises');
-      });
+    const fetchExercises = async () => {
+      setIsLoading(true);
+      const savedProgress = await AsyncStorage.getItem('workoutProgress');
+      const progress = savedProgress ? JSON.parse(savedProgress) : {};
+
+      if (progress[level]?.currentExerciseIndex >= 0) {
+        setCurrentExerciseIndex(progress[level].currentExerciseIndex);
+      }
+
+      getLevelExercises(level)
+        .then((data) => {
+          setExercises(data);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    };
+    fetchExercises();
   }, [level]);
 
-  const totalDuration = exercises.reduce((acc, exercise) => acc + exercise.duration_in_seconds, 0);
+  const saveProgress = async (completed = false) => {
+    const savedProgress = await AsyncStorage.getItem('workoutProgress');
+    const progress = savedProgress ? JSON.parse(savedProgress) : {};
+    progress[level] = { currentExerciseIndex, completed };
+    await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
+  };
 
   const handleNext = () => {
     if (currentExerciseIndex < exercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
+      setCurrentExerciseIndex((prev) => {
+        const newIndex = prev + 1;
+        saveProgress();
+        return newIndex;
+      });
     }
   };
 
-  const handleStartWorkout = () => {
-    setWorkoutStarted(true);
-  };
-
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = async () => {
+    await saveProgress(true); 
     router.push('/results');
   };
 
   if (isLoading) {
-    return <ActivityIndicator size="large" color="#4B88A2" style={styles.loader} />;
-  }
-
-  if (error) {
-    return <Text style={styles.error}>{error}</Text>;
-  }
-
-  if (!workoutStarted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Workout Overview</Text>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryText}>Total Duration: {totalDuration} seconds</Text>
-          <Text style={styles.summaryText}>Exercises:</Text>
-          <FlatList
-            data={exercises}
-            keyExtractor={(item, index) => String(item.id) + String(index)}
-            renderItem={({ item }) => (
-              <Text style={styles.exerciseItem}>{item.name}</Text>
-            )}
-          />
-          <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
-            <Text style={styles.buttonText}>Start Workout</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+    return <ActivityIndicator size="large" color="#4B88A2" />;
   }
 
   const currentExercise = exercises[currentExerciseIndex];
@@ -79,10 +67,7 @@ export default function Exercises() {
       <View style={styles.exerciseCard}>
         <Text style={styles.exerciseName}>{currentExercise.name}</Text>
         <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
-        <Text style={styles.exerciseDuration}>
-          Duration: {currentExercise.duration_in_seconds} seconds
-        </Text>
-        <Text style={styles.exerciseXP}>+{currentExercise.xp} XP</Text>
+        <Text style={styles.exerciseDuration}>Duration: {currentExercise.duration_in_seconds} seconds</Text>
       </View>
       <View style={styles.buttonContainer}>
         {currentExerciseIndex < exercises.length - 1 ? (
@@ -98,6 +83,7 @@ export default function Exercises() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
