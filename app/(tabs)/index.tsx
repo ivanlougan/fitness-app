@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'; // Use this for navigation
+import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
-  const router = useRouter(); // Initialize the router
+  const router = useRouter(); 
   const [progress, setProgress] = useState({});
 
   useEffect(() => {

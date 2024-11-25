@@ -84,6 +84,16 @@ export default function UserPage() {
         }
     };
 
+    const handleResetProgress = async () => {
+        try {
+            await AsyncStorage.removeItem('workoutProgress'); 
+            Alert.alert('Success', 'All progress has been reset!');
+        } catch (error) {
+            Alert.alert('Error', 'Failed to reset progress.');
+        }
+    };
+    
+
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {user ? (
@@ -144,6 +154,10 @@ export default function UserPage() {
 
                     <TouchableOpacity style={styles.logout} onPress={handleLogout}>
                         <Text style={styles.logoutText}>Log Out</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
+                        <Text style={styles.resetButtonText}>Reset Progress</Text>
                     </TouchableOpacity>
                 </>
             ) : (
@@ -301,5 +315,19 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         color: '#fff',
         fontSize: 14,
+    },
+    resetButton: {
+        backgroundColor: '#4B88A2',
+        padding: 12,
+        borderRadius: 30,
+        marginTop: 10,
+        width: '100%',
+        alignSelf: 'center',
+    },
+    resetButtonText: {
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
