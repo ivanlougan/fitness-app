@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { updateUserGoals } from '../../api'; 
+import { addGoal, deleteGoal, getUsers } from '../../api';
 
 export default function UserPage() {
     const router = useRouter();
     const [user, setUser] = useState(null);
     const [editing, setEditing] = useState(false);
     const [newGoal, setNewGoal] = useState('');
+    const [editingGoalIndex, setEditingGoalIndex] = useState(null);
 
     useEffect(() => {
         const getUserFromStorage = async () => {
@@ -36,21 +37,50 @@ export default function UserPage() {
         }
     };
 
-    const handleEditGoal = async () => {
+    const handleSaveGoal = async () => {
         if (!newGoal.trim()) {
             Alert.alert('Error', 'Goal cannot be empty.');
             return;
         }
 
         try {
-            const updatedUser = await updateUserGoals(user._id, newGoal);
+            if (editingGoalIndex !== null) {
+                const oldGoal = user.goals[editingGoalIndex];
+                await deleteGoal(user._id, oldGoal); 
+                await addGoal(user._id, newGoal); 
+            } else {
+                await addGoal(user._id, newGoal);
+            }
+
+            const updatedUser = (await getUsers()).find(u => u._id === user._id);
             setUser(updatedUser);
             await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
+
             Alert.alert('Success', 'Goal updated successfully!');
             setEditing(false);
             setNewGoal('');
+            setEditingGoalIndex(null);
         } catch (error) {
             Alert.alert('Error', 'Failed to update goal.');
+        }
+    };
+
+    const handleEditGoal = (index) => {
+        setNewGoal(user.goals[index]);
+        setEditingGoalIndex(index);
+        setEditing(true);
+    };
+
+    const handleDeleteGoal = async (goal) => {
+        try {
+            await deleteGoal(user._id, goal);
+            const updatedUser = (await getUsers()).find(u => u._id === user._id);
+            setUser(updatedUser);
+            await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
+
+            Alert.alert('Success', 'Goal deleted successfully!');
+        } catch (error) {
+            Alert.alert('Error', 'Failed to delete goal.');
         }
     };
 
@@ -78,9 +108,15 @@ export default function UserPage() {
                             <Text style={styles.textHeader}>Goals:</Text>
                             {user.goals && user.goals.length > 0 ? (
                                 user.goals.map((goal, index) => (
-                                    <Text key={index} style={styles.goalText}>
-                                        {goal}
-                                    </Text>
+                                    <View key={index} style={styles.goalContainer}>
+                                        <Text style={styles.goalText}>{goal}</Text>
+                                        <TouchableOpacity style={styles.editButton} onPress={() => handleEditGoal(index)}>
+                                            <Text style={styles.editButtonText}>Edit</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteGoal(goal)}>
+                                            <Text style={styles.deleteButtonText}>Delete</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 ))
                             ) : (
                                 <Text style={styles.goalText}>No goals set</Text>
@@ -95,7 +131,7 @@ export default function UserPage() {
                                     value={newGoal}
                                     onChangeText={setNewGoal}
                                 />
-                                <TouchableOpacity style={styles.saveButton} onPress={handleEditGoal}>
+                                <TouchableOpacity style={styles.saveButton} onPress={handleSaveGoal}>
                                     <Text style={styles.saveButtonText}>Save Goal</Text>
                                 </TouchableOpacity>
                             </View>
@@ -116,6 +152,7 @@ export default function UserPage() {
         </ScrollView>
     );
 }
+
 
 const styles = StyleSheet.create({
     scrollViewContainer: {
@@ -233,5 +270,36 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    goalContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        backgroundColor: '#e9e9e9',
+        padding: 10,
+        borderRadius: 8,
+    },
+    editButton: {
+        backgroundColor: '#5cb85c',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        marginLeft: 5,
+    },
+    editButtonText: {
+        color: '#fff',
+        fontSize: 14,
+    },
+    deleteButton: {
+        backgroundColor: '#d9534f',
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        marginLeft: 5,
+    },
+    deleteButtonText: {
+        color: '#fff',
+        fontSize: 14,
     },
 });
