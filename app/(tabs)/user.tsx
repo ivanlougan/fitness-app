@@ -11,6 +11,8 @@ export default function UserPage() {
     const [editing, setEditing] = useState(false);
     const [newGoal, setNewGoal] = useState('');
     const [editingGoalIndex, setEditingGoalIndex] = useState(null);
+    const [isDropdownVisible, setIsDropdownVisible] = useState(false); 
+    const [newImageUrl, setNewImageUrl] = useState(''); 
 
     useEffect(() => {
         const getUserFromStorage = async () => {
@@ -93,18 +95,51 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to reset progress.');
         }
     };
-    
+
+    const handleImageChange = async () => {
+        if (!newImageUrl.trim()) {
+            Alert.alert('Error', 'Please enter a valid image URL.');
+            return;
+        }
+
+        try {
+            const updatedUser = { ...user, image_url: newImageUrl };
+            setUser(updatedUser);
+            await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
+            setIsDropdownVisible(false); 
+            Alert.alert('Success', 'Profile image updated successfully!');
+        } catch (error) {
+            Alert.alert('Error', 'Failed to update profile image.');
+        }
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {user ? (
                 <>
-                    <Image
-                        style={styles.avatar}
-                        source={{
-                            uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-                        }}
-                    />
+                    <TouchableOpacity onPress={() => setIsDropdownVisible(!isDropdownVisible)}>
+                        <Image
+                            style={styles.avatar}
+                            source={{
+                                uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+                            }}
+                        />
+                    </TouchableOpacity>
+
+                    {isDropdownVisible && (
+                        <View style={styles.dropdown}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter new image URL"
+                                value={newImageUrl}
+                                onChangeText={setNewImageUrl}
+                            />
+                            <TouchableOpacity style={styles.saveButton} onPress={handleImageChange}>
+                                <Text style={styles.saveButtonText}>Save Image</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
                     <View style={styles.userInfoSection}>
                         <View style={styles.textSection}>
                             <Text style={styles.textHeader}>User info:</Text>
@@ -117,6 +152,7 @@ export default function UserPage() {
                             )}
                         </View>
                     </View>
+
                     <View style={styles.goalsSection}>
                         <View style={styles.textSection}>
                             <Text style={styles.textHeader}>Goals:</Text>
@@ -171,7 +207,6 @@ export default function UserPage() {
     );
 }
 
-
 const styles = StyleSheet.create({
     scrollViewContainer: {
         flexGrow: 1,
@@ -192,6 +227,15 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.2,
         shadowRadius: 5,
+    },
+    dropdown: {
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 8,
+        marginTop: 10,
+        width: '80%',
+        alignSelf: 'center',
+        elevation: 5,
     },
     text: {
         color: '#000',
