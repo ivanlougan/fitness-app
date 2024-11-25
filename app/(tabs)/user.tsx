@@ -111,6 +111,9 @@ export default function UserPage() {
                             <Text style={styles.userInfoText}>Age: {user.age}</Text>
                             <Text style={styles.userInfoText}>Weight: {user.weight}</Text>
                             <Text style={styles.userInfoText}>Height: {user.height}</Text>
+                            {user.level && (
+                                <Text style={styles.userInfoText}>Level: {user.level}</Text>
+                            )}
                         </View>
                     </View>
                     <View style={styles.goalsSection}>
