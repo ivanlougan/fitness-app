@@ -1,17 +1,22 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'; 
+import { useLocalSearchParams, useRouter } from 'expo-router'; 
 import XpBar from './components/XpBar.jsx';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 export default function ResultPage() {
-    const router = useRouter(); 
+    const router = useRouter();
+    const {xp} = useLocalSearchParams()
+    
 
     const handleFinish = () => {
         router.push('/'); 
     };
 
+
     return (
         <View style={styles.container}>
-            <XpBar/>
+            <XpBar xp={xp}/>
             <Text style={styles.title}>Results:</Text>
             <Text style={styles.text}>XP gained: 100XP</Text>
             <Text style={styles.text}>Calories burnt: 100</Text>
