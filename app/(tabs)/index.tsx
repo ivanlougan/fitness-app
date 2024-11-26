@@ -43,8 +43,8 @@ export default function WorkoutLevelsPage() {
     if (user) {
       updatedUser = {
         ...user,
-        xp: user.xp + 100, // Award XP
-        level: user.level < level ? level : user.level, // Update level if progressing
+        xp: user.xp + 100, 
+        level: user.level < level ? level : user.level, 
       };
     }
 
@@ -75,12 +75,34 @@ export default function WorkoutLevelsPage() {
     }
   };
 
+ 
+  const getBorderColor = (level, maxLevel) => {
+    const percentage = (level - 1) / (maxLevel - 1);
+    
+    
+    const red = Math.min(255, Math.floor(255 * percentage)); 
+    const green = Math.max(0, Math.floor(255 * (1 - percentage))); 
+    const blue = 0; 
+
+    return `rgb(${red}, ${green}, ${blue})`; 
+  };
+
+  const maxLevel = Math.max(...workouts.map(workout => workout.level)); 
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Header title="FitnessApp" />
       <View style={styles.levelsContainer}>
         {workouts.map((workout, index) => (
-          <View key={index} style={styles.levelCard}>
+          <View
+            key={index}
+            style={[
+              styles.levelCard,
+              {
+                borderColor: getBorderColor(workout.level, maxLevel),
+              },
+            ]}
+          >
             <Text style={styles.levelTitle}>Level: {workout.level}</Text>
             <View style={styles.buttonWrapper}>
               <TouchableOpacity
@@ -125,6 +147,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
     elevation: 3,
+    borderWidth: 7, 
   },
   levelTitle: {
     fontSize: 20,
@@ -168,3 +191,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
   },
 });
+
