@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addGoal, deleteGoal, getUsers } from '../../api';
+import { addGoal, deleteGoal, getUsers, patchUser } from '../../api';
 import { Ionicons } from 'react-native-vector-icons'; 
 import XpBar from '../components/XpBar';
 
@@ -13,7 +13,8 @@ export default function UserPage() {
     const [newGoal, setNewGoal] = useState('');
     const [editingGoalIndex, setEditingGoalIndex] = useState(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); 
-    const [newImageUrl, setNewImageUrl] = useState(''); 
+    const [newImageUrl, setNewImageUrl] = useState('');
+    let resetProgressChecker = true
 
     useEffect(() => {
         const getUserFromStorage = async () => {
@@ -30,7 +31,7 @@ export default function UserPage() {
         };
 
         getUserFromStorage();
-    }, [router]);
+    }, [router, resetProgressChecker]);
 
     const handleLogout = async () => {
         try {
@@ -93,8 +94,8 @@ export default function UserPage() {
           const signedInUser = await AsyncStorage.getItem('signedInUser');
           if (signedInUser) {
             const user = JSON.parse(signedInUser);
-            user.level = 1; 
-      
+            user.level = 1;
+                        
             await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
             
             Alert.alert('Success', 'User level has been reset to 1!');
@@ -107,11 +108,29 @@ export default function UserPage() {
         }
       };
       
+      async function handleResetXP(){
+        try{
+            const signedInUser = await AsyncStorage.getItem('signedInUser')
+            if(signedInUser){
+                const updatedUser = {...signedInUser}
+                updatedUser.xp = 0
+                await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
+                Alert.alert("Success", "XP reset successfully")
+            } else{
+                Alert.alert("Error", "No user data found!")
+            }
+        } catch(error){
+            Alert.alert("Error", "Failed to reset XP")
+            console.error("Error resetting XP:", error)
+        }
+      }
+      
       const handleResetProgress = async () => {
         try {
           await AsyncStorage.removeItem('workoutProgress'); 
           await handleResetUserLevel();
           await handleResetXP()
+          resetProgressChecker = !resetProgressChecker
           Alert.alert('Success', 'All progress and user level have been reset!');
         } catch (error) {
           Alert.alert('Error', 'Failed to reset progress.');
@@ -119,17 +138,6 @@ export default function UserPage() {
         }
       };
       
-      async function handleResetXP(){
-        try{
-            const updatedUser = {...user}
-            updatedUser.xp = 0
-            await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
-            Alert.alert("Success", "XP reset successfully")
-        } catch(error){
-            Alert.alert("Error", "Failed to reset XP")
-            console.error("Error resetting XP:", error)
-        }
-      }
 
     const handleImageChange = async () => {
         if (!newImageUrl.trim()) {

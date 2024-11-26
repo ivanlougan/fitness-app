@@ -13,6 +13,11 @@ const getUsers = () => {
         });
 };
 
+function patchUser(userId, options){
+    return api.patch(`/users/${userId}`, options).then(({data}) => {
+        return data.user
+    })
+}
 
 const getLevelExercises = (level) => {
     return api.get(`/workouts/${level}`)
@@ -48,4 +53,4 @@ const getWorkouts = () => {
         });
 };
 
-export { getUsers, getLevelExercises, addGoal, deleteGoal, getWorkouts };
+export { getUsers, getLevelExercises, addGoal, deleteGoal, getWorkouts, patchUser };
