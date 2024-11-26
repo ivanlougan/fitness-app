@@ -13,7 +13,8 @@ export default function UserPage() {
     const [newGoal, setNewGoal] = useState('');
     const [editingGoalIndex, setEditingGoalIndex] = useState(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); 
-    const [newImageUrl, setNewImageUrl] = useState(''); 
+    const [newImageUrl, setNewImageUrl] = useState('');
+    let resetProgressChecker = true
 
     useEffect(() => {
         const getUserFromStorage = async () => {
@@ -30,7 +31,7 @@ export default function UserPage() {
         };
 
         getUserFromStorage();
-    }, [router]);
+    }, [router, resetProgressChecker]);
 
     const handleLogout = async () => {
         try {
@@ -129,6 +130,7 @@ export default function UserPage() {
           await AsyncStorage.removeItem('workoutProgress'); 
           await handleResetUserLevel();
           await handleResetXP()
+          resetProgressChecker = !resetProgressChecker
           Alert.alert('Success', 'All progress and user level have been reset!');
         } catch (error) {
           Alert.alert('Error', 'Failed to reset progress.');
