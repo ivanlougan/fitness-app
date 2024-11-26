@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
-import { getUsers } from "../../api.js"; 
+import { getUsers } from "../../api.js";
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function LeaderboardsPage() {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [signedInUser, setSignedInUser] = useState(null); 
 
   useEffect(() => {
     setIsLoading(true);
@@ -13,6 +15,16 @@ export default function LeaderboardsPage() {
       .then((users) => {
         setIsLoading(false);
         setUsers(users);
+        AsyncStorage.getItem('signedInUser')
+          .then((signedInUserData) => {
+            if (signedInUserData) {
+              setSignedInUser(JSON.parse(signedInUserData)); 
+            }
+          })
+          .catch((err) => {
+            setError("Error fetching signed-in user.");
+            console.error(err);
+          });
       })
       .catch((err) => {
         setIsLoading(false);
@@ -28,12 +40,22 @@ export default function LeaderboardsPage() {
     return <Text>{error}</Text>;
   }
 
+  const sortedUsers = users.sort((a, b) => b.xp - a.xp);
+
+  const signedInUserIndex = sortedUsers.findIndex(user => user._id === signedInUser?._id);
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
       <View style={styles.leaderboardContainer}>
-        {users.map((user, index) => (
-          <View key={`user-${user._id}-container`} style={styles.userContainer}>
+        {sortedUsers.map((user, index) => (
+          <View
+            key={`user-${user._id}-container`}
+            style={[
+              styles.userContainer,
+              signedInUser && signedInUser._id === user._id ? styles.signedInUserContainer : null, 
+            ]}
+          >
             <Text style={styles.rank}>{index + 1}.</Text>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{user.name}</Text>
@@ -43,6 +65,15 @@ export default function LeaderboardsPage() {
           </View>
         ))}
       </View>
+
+     
+      {signedInUser && signedInUserIndex !== -1 && (
+        <View style={styles.signedInRankContainer}>
+          <Text style={styles.signedInRankText}>
+            You are currently №{signedInUserIndex + 1} on the leaderboard!
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -50,7 +81,7 @@ export default function LeaderboardsPage() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#FFF9FB", 
+    backgroundColor: "#FFF9FB",
     paddingHorizontal: 20,
     paddingVertical: 30,
   },
@@ -58,7 +89,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    color: "#333", 
+    color: "#333",
     marginBottom: 20,
   },
   leaderboardContainer: {
@@ -69,7 +100,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 20,
-    backgroundColor: "#FFFFFF", 
+    backgroundColor: "#FFFFFF",
     marginBottom: 15,
     width: "90%",
     maxWidth: 350,
@@ -78,12 +109,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
     elevation: 3,
-    borderRadius: 10, 
+    borderRadius: 10,
+  },
+  signedInUserContainer: {
+    backgroundColor: "#D1F2FB",
+    borderWidth: 2,
+    borderColor: "#4B88A2", 
   },
   rank: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#4B88A2", 
+    color: "#4B88A2",
     marginRight: 15,
   },
   userInfo: {
@@ -92,16 +128,29 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333", 
+    color: "#333",
     marginBottom: 5,
   },
   userLevel: {
     fontSize: 14,
-    color: "#666", 
+    color: "#666",
     marginBottom: 5,
   },
   userXP: {
     fontSize: 14,
-    color: "#666", 
+    color: "#666",
+  },
+  signedInRankContainer: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: "#D1F2FB",
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  signedInRankText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#4B88A2",
+    textAlign: "center",
   },
 });
