@@ -65,16 +65,17 @@ export default function WorkoutLevelsPage() {
     if (progress[level]?.currentExerciseIndex >= 0) return 'Resume Workout';
     return 'Start Workout';
   };
-
-  const getBorderColor = (level, maxLevel) => {
+  
+  const getBackgroundColor = (level, maxLevel) => {
     const percentage = (level - 1) / (maxLevel - 1);
-    
     const red = Math.min(255, Math.floor(255 * percentage)); 
     const green = Math.max(0, Math.floor(255 * (1 - percentage))); 
-    const blue = 0; 
+    const blue = 0;
 
-    return `rgb(${red}, ${green}, ${blue})`; 
+
+    return `rgba(${red}, ${green}, ${blue}, 0.7)`; 
   };
+
 
   const maxLevel = Math.max(...workouts.map(workout => workout.level)); 
 
@@ -88,7 +89,7 @@ export default function WorkoutLevelsPage() {
             style={[
               styles.levelCard,
               {
-                borderColor: getBorderColor(workout.level, maxLevel),
+                backgroundColor: getBackgroundColor(workout.level, maxLevel), 
               },
             ]}
           >
@@ -125,7 +126,6 @@ const styles = StyleSheet.create({
   levelCard: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#FFFFFF',
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -135,14 +135,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 5,
-    elevation: 3,
-    borderWidth: 7, 
   },
   levelTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   buttonWrapper: {
