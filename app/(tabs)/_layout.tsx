@@ -18,6 +18,11 @@ export default function TabLayout() {
             <Ionicons name={focused ? 'list' : 'list-outline'} size={24} color={color} />
           )
          }} />
+      <Tabs.Screen name="leaderboards" options={{ title: "Leaderboards",
+        tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
+        )
+       }} />
       <Tabs.Screen name="user" options={{ title: "Profile",
         tabBarIcon: ({ color, focused }) => (
           <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
