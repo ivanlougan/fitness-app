@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { getUsers } from "../../api.js";
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function LeaderboardsPage() {
   const [users, setUsers] = useState([]);
@@ -61,12 +62,18 @@ export default function LeaderboardsPage() {
               <Text style={styles.userName}>{user.name}</Text>
               <Text style={styles.userLevel}>Level: {user.level}</Text>
               <Text style={styles.userXP}>XP: {user.xp}</Text>
+              {index === 0 && (
+              <Ionicons name="trophy" size={24} color="#FFD700" style={styles.trophyIcon} />
+            )}
             </View>
+            <Image 
+              source={{ uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }} 
+              style={styles.avatar} 
+            />
           </View>
         ))}
       </View>
 
-     
       {signedInUser && signedInUserIndex !== -1 && (
         <View style={styles.signedInRankContainer}>
           <Text style={styles.signedInRankText}>
@@ -153,4 +160,17 @@ const styles = StyleSheet.create({
     color: "#4B88A2",
     textAlign: "center",
   },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 40,  
+    marginLeft: 10,    
+  },
+  trophyIcon: {
+    position: "absolute",
+    right: 25,
+    top:15,
+    fontSize: 36,
+  },
 });
+
