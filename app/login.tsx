@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { getUsers } from '../api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingAnimation from './components/LoadingAnimation'
+import Header from './components/Header'
 
 
 export default function LoginPage() {
@@ -43,6 +44,8 @@ export default function LoginPage() {
     }, []);
 
     return (
+        <>
+        <Header title="FlashFit" />
         <View style={styles.container}>
             <Text style={styles.header}>Select User</Text>
             {loading ? (
@@ -68,6 +71,7 @@ export default function LoginPage() {
                 <Text>No users found</Text>
             )}
         </View>
+        </>
     );
 }
 
