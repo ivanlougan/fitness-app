@@ -1,5 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router'; 
+import XpBar from './components/XpBar.jsx';
 
 export default function ResultPage() {
     const router = useRouter(); 
@@ -10,6 +11,7 @@ export default function ResultPage() {
 
     return (
         <View style={styles.container}>
+            <XpBar/>
             <Text style={styles.title}>Results:</Text>
             <Text style={styles.text}>XP gained: 100XP</Text>
             <Text style={styles.text}>Calories burnt: 100</Text>

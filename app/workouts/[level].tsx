@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLevelExercises } from '../../api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import XpBar from "../components/XpBar.jsx"
 
 export default function Exercises() {
   const { level } = useLocalSearchParams();
@@ -102,6 +103,7 @@ export default function Exercises() {
 
   return (
     <View style={styles.container}>
+      <XpBar/>
       <Text style={styles.title}>
         {isResting
           ? 'Rest Period'
