@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Header from '../components/Header';
 import { getWorkouts } from '../../api';
 import XpBar from '../components/XpBar';
 
@@ -36,37 +35,21 @@ export default function WorkoutLevelsPage() {
   }, []);
 
   const updateProgress = async (level) => {
-  
     if (progress[level]?.completed) return;
-
-    const updatedProgress = { ...progress, [level]: { currentExerciseIndex: -1, completed: false } };
-    let updatedUser = { ...user };
-
-    if (user) {
-      updatedUser = {
-        ...user,
-        xp: user.xp + 100, 
-        level: user.level + 1, 
-      };
-    }
-
+  
+    const updatedProgress = {
+      ...progress,
+      [level]: { currentExerciseIndex: -1, completed: false },
+    };
+  
     try {
       await AsyncStorage.setItem('workoutProgress', JSON.stringify(updatedProgress));
-      await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
-
       setProgress(updatedProgress);
-      setUser(updatedUser);
     } catch (error) {
       Alert.alert('Error', 'Failed to update progress');
     }
   };
-
-  const getButtonText = (level) => {
-    if (progress[level]?.completed) return 'Completed';
-    if (progress[level]?.currentExerciseIndex >= 0) return 'Resume Workout';
-    return 'Start Workout';
-  };
-
+  
   const handleWorkoutPress = (level) => {
     if (progress[level]?.completed) {
       Alert.alert('Already Completed', 'You have already completed this level.');
@@ -74,6 +57,13 @@ export default function WorkoutLevelsPage() {
       updateProgress(level);
       router.push(`/workouts/${level}`);
     }
+  };
+  
+
+  const getButtonText = (level) => {
+    if (progress[level]?.completed) return 'Completed';
+    if (progress[level]?.currentExerciseIndex >= 0) return 'Resume Workout';
+    return 'Start Workout';
   };
 
   const getBorderColor = (level, maxLevel) => {

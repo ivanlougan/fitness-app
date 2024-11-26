@@ -1,22 +1,44 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router'; 
 import XpBar from './components/XpBar.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
 
 export default function ResultPage() {
     const router = useRouter();
-    const {xp} = useLocalSearchParams()
-    
+    const { xp, level } = useLocalSearchParams(); 
 
-    const handleFinish = () => {
-        router.push('/'); 
+    const handleFinish = async () => {
+        try {
+            const savedProgress = await AsyncStorage.getItem('workoutProgress');
+            const progress = savedProgress ? JSON.parse(savedProgress) : {};
+
+            if (!progress[level]) {
+                progress[level] = { currentExerciseIndex: -1, completed: true };
+            } else {
+                progress[level].completed = true;
+            }
+
+            const signedInUser = await AsyncStorage.getItem('signedInUser');
+            const user = signedInUser ? JSON.parse(signedInUser) : null;
+
+            if (user) {
+                user.xp += 100; 
+                user.level += 1; 
+                await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
+            }
+
+            await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
+
+            Alert.alert('Success', 'Workout completed and progress updated!');
+            router.push('/'); 
+        } catch (error) {
+            Alert.alert('Error', 'Failed to update progress');
+        }
     };
-
 
     return (
         <View style={styles.container}>
-            <XpBar xp={xp}/>
+            <XpBar xp={xp} />
             <Text style={styles.title}>Results:</Text>
             <Text style={styles.text}>XP gained: 100XP</Text>
             <Text style={styles.text}>Calories burnt: 100</Text>
@@ -29,7 +51,6 @@ export default function ResultPage() {
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
