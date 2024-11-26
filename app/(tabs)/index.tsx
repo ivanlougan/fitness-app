@@ -7,15 +7,20 @@ import { getWorkouts } from '../../api';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
-  const router = useRouter(); 
   const [progress, setProgress] = useState({});
+  const [user, setUser] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchWorkouts = async () => {
       try {
         const fetchedWorkouts = await getWorkouts();
         const savedProgress = await AsyncStorage.getItem('workoutProgress');
-        setProgress(savedProgress ? JSON.parse(savedProgress) : {}); 
+        const signedInUser = await AsyncStorage.getItem('signedInUser');
+
+        setProgress(savedProgress ? JSON.parse(savedProgress) : {});
+        setUser(signedInUser ? JSON.parse(signedInUser) : null);
+
         if (Array.isArray(fetchedWorkouts)) {
           setWorkouts(fetchedWorkouts);
         } else {
@@ -25,16 +30,35 @@ export default function WorkoutLevelsPage() {
         Alert.alert('Error', 'Could not load workout levels');
       }
     };
+
     fetchWorkouts();
   }, []);
 
-  if (workouts.length === 0) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
+  const updateProgress = async (level) => {
+    if (progress[level]?.completed) return;
+
+    const updatedProgress = { ...progress, [level]: { currentExerciseIndex: -1, completed: true } };
+    let updatedUser = { ...user };
+
+    if (user) {
+      updatedUser = {
+        ...user,
+        xp: user.xp + 100, // Award XP
+        level: user.level < level ? level : user.level, // Update level if progressing
+      };
+    }
+
+    try {
+      await AsyncStorage.setItem('workoutProgress', JSON.stringify(updatedProgress));
+      await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
+
+      setProgress(updatedProgress);
+      setUser(updatedUser);
+      Alert.alert('Success', `Level ${level} completed!`);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update progress');
+    }
+  };
 
   const getButtonText = (level) => {
     if (progress[level]?.completed) return 'Completed';
@@ -43,7 +67,12 @@ export default function WorkoutLevelsPage() {
   };
 
   const handleWorkoutPress = (level) => {
-    router.push(`/workouts/${level}`);
+    if (progress[level]?.completed) {
+      Alert.alert('Already Completed', 'You have already completed this level.');
+    } else {
+      updateProgress(level);
+      router.push(`/workouts/${level}`);
+    }
   };
 
   return (
@@ -60,7 +89,6 @@ export default function WorkoutLevelsPage() {
                   progress[workout.level]?.completed && styles.disabledButton,
                 ]}
                 onPress={() => handleWorkoutPress(workout.level)}
-                disabled={progress[workout.level]?.completed}
               >
                 <Text style={styles.buttonText}>{getButtonText(workout.level)}</Text>
               </TouchableOpacity>
