@@ -87,14 +87,36 @@ export default function UserPage() {
         }
     };
 
-    const handleResetProgress = async () => {
+    const handleResetUserLevel = async () => {
         try {
-            await AsyncStorage.removeItem('workoutProgress'); 
-            Alert.alert('Success', 'All progress has been reset!');
+          const signedInUser = await AsyncStorage.getItem('signedInUser');
+          if (signedInUser) {
+            const user = JSON.parse(signedInUser);
+            user.level = 1; 
+      
+            await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
+            
+            Alert.alert('Success', 'User level has been reset to 1!');
+          } else {
+            Alert.alert('Error', 'No user data found!');
+          }
         } catch (error) {
-            Alert.alert('Error', 'Failed to reset progress.');
+          Alert.alert('Error', 'Failed to reset user level.');
+          console.error('Error resetting user level:', error);
         }
-    };
+      };
+      
+      const handleResetProgress = async () => {
+        try {
+          await AsyncStorage.removeItem('workoutProgress'); 
+          await handleResetUserLevel(); 
+          Alert.alert('Success', 'All progress and user level have been reset!');
+        } catch (error) {
+          Alert.alert('Error', 'Failed to reset progress.');
+          console.error('Error resetting progress:', error);
+        }
+      };
+      
 
     const handleImageChange = async () => {
         if (!newImageUrl.trim()) {
@@ -195,8 +217,8 @@ export default function UserPage() {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
-                        <Text style={styles.resetButtonText}>Reset Progress</Text>
-                    </TouchableOpacity>
+  <Text style={styles.resetButtonText}>Reset Progress and Level</Text>
+</TouchableOpacity>
                 </>
             ) : (
                 <Text>Loading user information...</Text>
