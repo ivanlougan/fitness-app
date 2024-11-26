@@ -20,7 +20,7 @@ export default function TabLayout() {
          }} />
       <Tabs.Screen name="leaderboards" options={{ title: "Leaderboards",
         tabBarIcon: ({ color, focused }) => (
-          <Ionicons name={focused ? 'person' : 'person-outline'} size={24} color={color} />
+          <Ionicons name={focused ? 'people' : 'people-outline'} size={24} color={color} />
         )
        }} />
       <Tabs.Screen name="user" options={{ title: "Profile",
