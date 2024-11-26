@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import { getWorkouts } from '../../api';
+import XpBar from '../components/XpBar';
 
 export default function WorkoutLevelsPage() {
   const [workouts, setWorkouts] = useState([]);
@@ -89,6 +90,7 @@ export default function WorkoutLevelsPage() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <XpBar/>
       <View style={styles.levelsContainer}>
         {workouts.map((workout, index) => (
           <View
