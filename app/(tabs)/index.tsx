@@ -35,9 +35,10 @@ export default function WorkoutLevelsPage() {
   }, []);
 
   const updateProgress = async (level) => {
+  
     if (progress[level]?.completed) return;
 
-    const updatedProgress = { ...progress, [level]: { currentExerciseIndex: -1, completed: true } };
+    const updatedProgress = { ...progress, [level]: { currentExerciseIndex: -1, completed: false } };
     let updatedUser = { ...user };
 
     if (user) {
@@ -54,7 +55,6 @@ export default function WorkoutLevelsPage() {
 
       setProgress(updatedProgress);
       setUser(updatedUser);
-      Alert.alert('Success', `Level ${level} completed!`);
     } catch (error) {
       Alert.alert('Error', 'Failed to update progress');
     }
@@ -75,10 +75,8 @@ export default function WorkoutLevelsPage() {
     }
   };
 
- 
   const getBorderColor = (level, maxLevel) => {
     const percentage = (level - 1) / (maxLevel - 1);
-    
     
     const red = Math.min(255, Math.floor(255 * percentage)); 
     const green = Math.max(0, Math.floor(255 * (1 - percentage))); 
@@ -191,4 +189,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
   },
 });
-

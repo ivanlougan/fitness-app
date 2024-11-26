@@ -1,6 +1,6 @@
-import { getUserById } from "@/api"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { useEffect, useState } from "react"
+import { Text } from 'react-native';  
 
 function XpBar(){
     const [xp, setXp] = useState(0)
@@ -21,13 +21,13 @@ function XpBar(){
     }, [])
     
     if(isLoading){
-        return <p>Now loading...</p>
+        return <Text>Now loading...</Text>; 
     }
     if(error){
-        return <p>{error}</p>
+        return <Text>{error}</Text>;  
     }
 
-    return (<p>{xp} XP</p>)
+    return (<Text>{xp} XP</Text>);  
 }
 
 export default XpBar
