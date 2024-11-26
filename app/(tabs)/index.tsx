@@ -44,7 +44,7 @@ export default function WorkoutLevelsPage() {
       updatedUser = {
         ...user,
         xp: user.xp + 100, 
-        level: user.level < level ? level : user.level, 
+        level: user.level + 1, 
       };
     }
 
