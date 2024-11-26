@@ -31,3 +31,4 @@ function XpBar(){
 }
 
 export default XpBar
+
