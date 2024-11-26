@@ -88,48 +88,15 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to delete goal.');
         }
     };
-
-    const handleResetUserLevel = async () => {
-        try {
-          const signedInUser = await AsyncStorage.getItem('signedInUser');
-          if (signedInUser) {
-            const user = JSON.parse(signedInUser);
-            user.level = 1;
-                        
-            await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
-            
-            Alert.alert('Success', 'User level has been reset to 1!');
-          } else {
-            Alert.alert('Error', 'No user data found!');
-          }
-        } catch (error) {
-          Alert.alert('Error', 'Failed to reset user level.');
-          console.error('Error resetting user level:', error);
-        }
-      };
-      
-      async function handleResetXP(){
-        try{
-            const signedInUser = await AsyncStorage.getItem('signedInUser')
-            if(signedInUser){
-                const updatedUser = {...signedInUser}
-                updatedUser.xp = 0
-                await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
-                Alert.alert("Success", "XP reset successfully")
-            } else{
-                Alert.alert("Error", "No user data found!")
-            }
-        } catch(error){
-            Alert.alert("Error", "Failed to reset XP")
-            console.error("Error resetting XP:", error)
-        }
-      }
       
       const handleResetProgress = async () => {
         try {
-          await AsyncStorage.removeItem('workoutProgress'); 
-          await handleResetUserLevel();
-          await handleResetXP()
+          await AsyncStorage.removeItem('workoutProgress');
+          const signedInUser = JSON.parse(await AsyncStorage.getItem('signedInUser'))
+          console.log(signedInUser)
+          const updatedUser = await patchUser(signedInUser._id, {reset_level: true, reset_xp: true})
+          console.log(updatedUser)
+          await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
           resetProgressChecker = !resetProgressChecker
           Alert.alert('Success', 'All progress and user level have been reset!');
         } catch (error) {
@@ -155,7 +122,6 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to update profile image.');
         }
     };
-    console.log(user)
     return (
         <>
         <XpBar xp={user?.xp}/>
