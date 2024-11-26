@@ -14,6 +14,14 @@ export default function Exercises() {
   const [timer, setTimer] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isResting, setIsResting] = useState(false);
+  const [xp, setXp] = useState(0)
+  const [signedInUser, setSignedInUser] = useState(null)
+
+  useEffect(() => {
+    AsyncStorage.getItem("signedInUser").then((user) => {
+      setSignedInUser(JSON.parse(user))
+    })
+  }, [])
 
   const REST_PERIOD_SECONDS = 20;
 
@@ -80,6 +88,9 @@ export default function Exercises() {
     if (!isResting) {
       startRestPeriod();
     } else if (currentExerciseIndex < exercises.length - 1) {
+      setXp((currentXp) => {
+        return currentXp + currentExercise.xp
+      })
       setCurrentExerciseIndex((prev) => {
         const newIndex = prev + 1;
         saveProgress();
@@ -92,7 +103,7 @@ export default function Exercises() {
 
   const handleFinishWorkout = async () => {
     await saveProgress(true);
-    router.push('/results');
+    router.push(`/results?xp=${signedInUser.xp+100}`);
   };
 
   if (isLoading) {
@@ -103,7 +114,7 @@ export default function Exercises() {
 
   return (
     <View style={styles.container}>
-      <XpBar/>
+      <XpBar xp={signedInUser.xp}/>
       <Text style={styles.title}>
         {isResting
           ? 'Rest Period'

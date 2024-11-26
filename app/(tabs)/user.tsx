@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addGoal, deleteGoal, getUsers } from '../../api';
 import { Ionicons } from 'react-native-vector-icons'; 
+import XpBar from '../components/XpBar';
 
 export default function UserPage() {
     const router = useRouter();
@@ -109,7 +110,8 @@ export default function UserPage() {
       const handleResetProgress = async () => {
         try {
           await AsyncStorage.removeItem('workoutProgress'); 
-          await handleResetUserLevel(); 
+          await handleResetUserLevel();
+          await handleResetXP()
           Alert.alert('Success', 'All progress and user level have been reset!');
         } catch (error) {
           Alert.alert('Error', 'Failed to reset progress.');
@@ -117,6 +119,17 @@ export default function UserPage() {
         }
       };
       
+      async function handleResetXP(){
+        try{
+            const updatedUser = {...user}
+            updatedUser.xp = 0
+            await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
+            Alert.alert("Success", "XP reset successfully")
+        } catch(error){
+            Alert.alert("Error", "Failed to reset XP")
+            console.error("Error resetting XP:", error)
+        }
+      }
 
     const handleImageChange = async () => {
         if (!newImageUrl.trim()) {
@@ -134,8 +147,10 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to update profile image.');
         }
     };
-
+    console.log(user)
     return (
+        <>
+        <XpBar xp={user?.xp}/>
         <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             {user ? (
                 <>
@@ -224,6 +239,7 @@ export default function UserPage() {
                 <Text>Loading user information...</Text>
             )}
         </ScrollView>
+        </>
     );
 }
 
