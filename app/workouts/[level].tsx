@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'rea
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLevelExercises } from '../../api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import XpBar from "../components/XpBar.jsx"
+import XpBar from "../components/XpBar.jsx";
 
 export default function Exercises() {
   const { level } = useLocalSearchParams();
@@ -14,14 +14,15 @@ export default function Exercises() {
   const [timer, setTimer] = useState(0);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isResting, setIsResting] = useState(false);
-  const [xp, setXp] = useState(0)
-  const [signedInUser, setSignedInUser] = useState(null)
+  const [xp, setXp] = useState(0);
+  const [signedInUser, setSignedInUser] = useState(null);
+  const [showIntro, setShowIntro] = useState(true);  // State to control intro card visibility
 
   useEffect(() => {
     AsyncStorage.getItem("signedInUser").then((user) => {
-      setSignedInUser(JSON.parse(user))
-    })
-  }, [])
+      setSignedInUser(JSON.parse(user));
+    });
+  }, []);
 
   const REST_PERIOD_SECONDS = 20;
 
@@ -38,7 +39,6 @@ export default function Exercises() {
       getLevelExercises(level)
         .then((data) => {
           setExercises(data);
-          setTimer(data[currentExerciseIndex]?.duration_in_seconds || 0);
           setIsLoading(false);
         })
         .catch(() => {
@@ -49,6 +49,7 @@ export default function Exercises() {
   }, [level]);
 
   useEffect(() => {
+    // Start the timer only when the user clicks Start Workout
     if (isTimerActive && timer > 0) {
       const countdown = setInterval(() => {
         setTimer((prev) => prev - 1);
@@ -66,7 +67,7 @@ export default function Exercises() {
   useEffect(() => {
     if (exercises[currentExerciseIndex]) {
       setTimer(exercises[currentExerciseIndex].duration_in_seconds);
-      setIsTimerActive(true);
+      setIsTimerActive(false);  // Don't start the timer yet
       setIsResting(false);
     }
   }, [currentExerciseIndex, exercises]);
@@ -89,8 +90,8 @@ export default function Exercises() {
       startRestPeriod();
     } else if (currentExerciseIndex < exercises.length - 1) {
       setXp((currentXp) => {
-        return currentXp + currentExercise.xp
-      })
+        return currentXp + currentExercise.xp;
+      });
       setCurrentExerciseIndex((prev) => {
         const newIndex = prev + 1;
         saveProgress();
@@ -103,7 +104,12 @@ export default function Exercises() {
 
   const handleFinishWorkout = async () => {
     await saveProgress(true);
-    router.push(`/results?xp=${signedInUser.xp+100}`);
+    router.push(`/results?xp=${signedInUser.xp + 100}`);
+  };
+
+  const handleStartWorkout = () => {
+    setShowIntro(false);  // Hide intro and start workout
+    setIsTimerActive(true);  // Start the timer for the first exercise
   };
 
   if (isLoading) {
@@ -114,41 +120,61 @@ export default function Exercises() {
 
   return (
     <View style={styles.container}>
-      <XpBar xp={signedInUser.xp}/>
-      <Text style={styles.title}>
-        {isResting
-          ? 'Rest Period'
-          : `Exercise ${currentExerciseIndex + 1} of ${exercises.length}`}
-      </Text>
-      <View style={styles.exerciseCard}>
-        {isResting ? (
-          <Text style={styles.restText}>Take a break!</Text>
-        ) : (
-          <>
-            <Text style={styles.exerciseName}>{currentExercise.name}</Text>
-            <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
-            <Text style={styles.exerciseDuration}>
-              Duration: {currentExercise.duration_in_seconds} seconds
+      {showIntro ? (
+        // Intro Card with the list of exercises
+        <View style={styles.introCard}>
+          <Text style={styles.introTitle}>Welcome to Level {level} Workout</Text>
+          <Text style={styles.introText}>Here are the exercises you will do:</Text>
+          {exercises.map((exercise, index) => (
+            <Text key={index} style={styles.exerciseItem}>
+              {exercise.name}: {exercise.duration_in_seconds} seconds
             </Text>
-          </>
-        )}
-      </View>
-      <Text style={styles.timer}>
-        Time Remaining: {timer} seconds
-      </Text>
-      <View style={styles.buttonContainer}>
-        {currentExerciseIndex < exercises.length - 1 || isResting ? (
-          <TouchableOpacity style={styles.nextButton} onPress={handleNextExercise}>
-            <Text style={styles.buttonText}>
-              {isResting ? 'Next Exercise' : 'Start Rest'}
-            </Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.finishButton} onPress={handleFinishWorkout}>
-            <Text style={styles.buttonText}>Finish</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          ))}
+        </View>
+      ) : (
+        <>
+          <XpBar xp={signedInUser.xp} />
+          <Text style={styles.title}>
+            {isResting
+              ? 'Rest Period'
+              : `Exercise ${currentExerciseIndex + 1} of ${exercises.length}`}
+          </Text>
+          <View style={styles.exerciseCard}>
+            {isResting ? (
+              <Text style={styles.restText}>Take a break!</Text>
+            ) : (
+              <>
+                <Text style={styles.exerciseName}>{currentExercise.name}</Text>
+                <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
+                <Text style={styles.exerciseDuration}>
+                  Duration: {currentExercise.duration_in_seconds} seconds
+                </Text>
+              </>
+            )}
+          </View>
+          <Text style={styles.timer}>Time Remaining: {timer} seconds</Text>
+          <View style={styles.buttonContainer}>
+            {currentExerciseIndex < exercises.length - 1 || isResting ? (
+              <TouchableOpacity style={styles.nextButton} onPress={handleNextExercise}>
+                <Text style={styles.buttonText}>
+                  {isResting ? 'Next Exercise' : 'Start Rest'}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.finishButton} onPress={handleFinishWorkout}>
+                <Text style={styles.buttonText}>Finish</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </>
+      )}
+      
+      {/* Start Workout Button outside of the intro card */}
+      {showIntro && (
+        <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
+          <Text style={styles.buttonText}>Start Workout</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -160,6 +186,45 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     alignItems: 'center',
     backgroundColor: '#FFF9FB',
+  },
+  introCard: {
+    padding: 20,
+    marginVertical: 20,
+    backgroundColor: '#f2f2f2',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 5,
+    elevation: 3,
+    alignItems: 'center',
+    width: '90%',
+  },
+  introTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4B88A2',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  introText: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  exerciseItem: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  startButton: {
+    backgroundColor: '#5cb85c',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    marginTop: 20,  // Adjusting margin to create space between intro card and button
   },
   title: {
     fontSize: 24,
