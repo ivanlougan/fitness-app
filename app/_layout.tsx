@@ -39,6 +39,7 @@ export default function RootLayout() {
             <Stack.Screen name="user" options={{ title: 'User Page' }} />
             <Stack.Screen name="bmi" options={{ title: "" }} />
             <Stack.Screen name="calorie-tracker" options={{ title: "" }} />
+            <Stack.Screen name="workouts/[level]" options={{ title: "" }} />
         </Stack>
     );
 }
