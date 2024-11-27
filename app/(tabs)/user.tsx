@@ -170,7 +170,7 @@ export default function UserPage() {
                             <Text style={styles.userInfoText}>Age: {user.age}</Text>
                             <Text style={styles.userInfoText}>Weight: {user.weight} kg</Text>
                             <Text style={styles.userInfoText}>Height: {user.height} cm</Text>
-                            <Text style={styles.userInfoText}>Level: {user?.level || 1}</Text>
+                            <Text style={styles.userInfoText}>Level: { user?.level >= 6 ? 'All levels completed' : user?.level}</Text>
                         </View>
                     </View>
 
