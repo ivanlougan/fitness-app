@@ -14,7 +14,7 @@ export default function UserPage() {
     const [editingGoalIndex, setEditingGoalIndex] = useState(null);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false); 
     const [newImageUrl, setNewImageUrl] = useState('');
-    let resetProgressChecker = true
+    let resetProgressChecker = true;
 
     useEffect(() => {
         const getUserFromStorage = async () => {
@@ -89,7 +89,7 @@ export default function UserPage() {
         }
     };
       
-      const handleResetProgress = async () => {
+    const handleResetProgress = async () => {
         try {
           await AsyncStorage.removeItem('workoutProgress');
           const signedInUser = JSON.parse(await AsyncStorage.getItem('signedInUser'))
@@ -103,8 +103,7 @@ export default function UserPage() {
           Alert.alert('Error', 'Failed to reset progress.');
           console.error('Error resetting progress:', error);
         }
-      };
-      
+    };
 
     const handleImageChange = async () => {
         if (!newImageUrl.trim()) {
@@ -122,6 +121,7 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to update profile image.');
         }
     };
+
     return (
         <>
         <XpBar xp={user?.xp}/>
@@ -156,8 +156,8 @@ export default function UserPage() {
                             <Text style={styles.textHeader}>User info:</Text>
                             <Text style={styles.userInfoText}>Name: {user.name}</Text>
                             <Text style={styles.userInfoText}>Age: {user.age}</Text>
-                            <Text style={styles.userInfoText}>Weight: {user.weight} kg</Text>
-                            <Text style={styles.userInfoText}>Height: {user.height} cm</Text>
+                            <Text style={styles.userInfoText}>Weight: {user.weight}</Text>
+                            <Text style={styles.userInfoText}>Height: {user.height}</Text>
                             <Text style={styles.userInfoText}>Level: {user?.level || 1}</Text>
                         </View>
                     </View>
@@ -182,6 +182,13 @@ export default function UserPage() {
                             )}
                         </View>
 
+                                            <TouchableOpacity 
+                        style={editing ? styles.addButtonEditing : styles.addButton} 
+                        onPress={() => setEditing(!editing)}
+                    >
+                        <Ionicons name={editing ? "close" : "add"} size={40} color="#fff" />
+                    </TouchableOpacity>
+
                         {editing && (
                             <View>
                                 <TextInput
@@ -196,18 +203,15 @@ export default function UserPage() {
                             </View>
                         )}
                     </View>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.logout} onPress={handleLogout}>
+                            <Text style={styles.logoutText}>Log Out</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.addButton} onPress={() => setEditing(!editing)}>
-                        <Text style={styles.addButtonText}>{editing ? 'Cancel' : 'Add a Goal'}</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-                        <Text style={styles.logoutText}>Log Out</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
-  <Text style={styles.resetButtonText}>Reset Progress and Level</Text>
-</TouchableOpacity>
+                        <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
+                            <Text style={styles.resetButtonText}>Reset Progress</Text>
+                        </TouchableOpacity>
+                    </View>
                 </>
             ) : (
                 <Text>Loading user information...</Text>
@@ -216,6 +220,8 @@ export default function UserPage() {
         </>
     );
 }
+
+
 
 const styles = StyleSheet.create({
     scrollViewContainer: {
@@ -226,11 +232,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     avatar: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
+        width: 150,
+        height: 150,
+        borderRadius: 80,
         marginBottom: 15,
-        marginTop: 40,
+        marginTop: 15,
         borderWidth: 3,
         borderColor: '#4B88A2',
         shadowColor: '#000',
@@ -257,7 +263,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         alignItems: 'flex-start', 
         backgroundColor: '#f2f2f2',
-        padding: 20,
+        padding: 5,
         borderRadius: 12,
         width: '100%',
         elevation: 3, 
@@ -275,12 +281,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     goalsSection: {
-        marginTop: 20,
+        marginTop: 10,
         backgroundColor: '#f2f2f2',
-        padding: 20,
+        padding: 5,
         borderRadius: 12,
         width: '100%',
-        marginBottom: 30,
+        marginBottom: 5,
         elevation: 3, 
     },
     textHeader: {
@@ -307,16 +313,26 @@ const styles = StyleSheet.create({
     },
     addButton: {
         backgroundColor: '#f0ad4e',
-        padding: 12,
-        borderRadius: 30,
-        marginBottom: 20,
-        alignSelf: 'center',
+        padding: 0,               // Remove extra padding
+        borderRadius: 50,
+        marginBottom: 5,
+        alignSelf: 'center',      // Center the button horizontally
+        width: 50,                // Keep the button larger
+        height: 50,               // Keep the button larger
+        justifyContent: 'center', // Vertically center content
+        alignItems: 'center',     // Horizontally center content
+        position: 'relative',     // Ensure elements within the button are well aligned
     },
-    addButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
+    addButtonEditing: {
+        backgroundColor: 'red',               // Remove extra padding
+        borderRadius: 50,
+        marginBottom: 20,
+        alignSelf: 'flex-end',     // Align to the right
+        width: 40,                // Smaller size
+        height: 40,               // Smaller size
+        justifyContent: 'center', // Vertically center content
+        alignItems: 'center',     // Horizontally center content
+        position: 'relative',     // Position to adjust elements if needed
     },
     saveButton: {
         backgroundColor: '#5cb85c',
@@ -333,7 +349,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#4B88A2',
         padding: 12,
         borderRadius: 30,
-        marginTop: 10,
+        marginTop: 5,
         width: '100%',
         alignSelf: 'center',
     },
@@ -367,16 +383,17 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     resetButton: {
-        backgroundColor: '#4B88A2',
-        padding: 12,
+        backgroundColor: '#d9534f',
+        padding: 7,
         borderRadius: 30,
         marginTop: 10,
-        width: '100%',
-        alignSelf: 'center',
+        marginBottom: 5,
+        width: '40%',
+        alignSelf: 'flex-end',
     },
     resetButtonText: {
         color: '#fff',
-        fontSize: 20,
+        fontSize: 15,
         fontWeight: 'bold',
         textAlign: 'center',
     },
