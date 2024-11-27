@@ -12,8 +12,11 @@ export default function BMI() {
     const [heightUnit, setHeightUnit] = useState('cm'); 
     const [bmi, setBmi] = useState(null);
     const [status, setStatus] = useState('');
+    const [weightError, setWeightError] = useState('');
+    const [heightError, setHeightError] = useState('');
 
-    
+    const isNumeric = (value) => /^\d*\.?\d+$/.test(value); 
+
     const convertWeightToKg = () => {
         if (weightUnit === 'lbs') {
             return parseFloat(weight) * 0.453592; 
@@ -29,9 +32,36 @@ export default function BMI() {
         return parseFloat(height) / 100; 
     };
 
+    const validateInputs = () => {
+        let isValid = true;
+
+        if (!isNumeric(weight)) {
+            setWeightError('Invalid input. Please enter a number.');
+            isValid = false;
+        } else {
+            setWeightError('');
+        }
+
+        if (!isNumeric(height)) {
+            setHeightError('Invalid input. Please enter a number.');
+            isValid = false;
+        } else {
+            setHeightError('');
+        }
+
+        return isValid;
+    };
+
     const calculateBMI = () => {
+        if (!validateInputs()) {
+            setBmi(null);
+            setStatus('');
+            return;
+        }
+
         const weightInKg = convertWeightToKg();
         const heightInMeters = convertHeightToMeters();
+
         if (weightInKg > 0 && heightInMeters > 0) {
             const bmiValue = weightInKg / (heightInMeters * heightInMeters);
             setBmi(bmiValue.toFixed(2));
@@ -56,13 +86,16 @@ export default function BMI() {
             <Text style={styles.title}>BMI Calculator</Text>
 
             <View style={styles.inputRow}>
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Enter weight in ${weightUnit === 'kg' ? 'kg' : 'lbs'}`}
-                    keyboardType="numeric"
-                    value={weight}
-                    onChangeText={(text) => setWeight(text)}
-                />
+                <View style={styles.inputColumn}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder={`Enter weight in ${weightUnit === 'kg' ? 'kg' : 'lbs'}`}
+                        keyboardType="numeric"
+                        value={weight}
+                        onChangeText={(text) => setWeight(text)}
+                    />
+                    {weightError ? <Text style={styles.errorText}>{weightError}</Text> : null}
+                </View>
                 <View style={styles.toggleContainer}>
                     <TouchableOpacity
                         style={[
@@ -86,13 +119,16 @@ export default function BMI() {
             </View>
 
             <View style={styles.inputRow}>
-                <TextInput
-                    style={styles.input}
-                    placeholder={`Enter height in ${heightUnit === 'cm' ? 'cm' : 'ft (ft.inches)'}`}
-                    keyboardType="numeric"
-                    value={height}
-                    onChangeText={(text) => setHeight(text)}
-                />
+                <View style={styles.inputColumn}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder={`Enter height in ${heightUnit === 'cm' ? 'cm' : 'ft (ft.inches)'}`}
+                        keyboardType="numeric"
+                        value={height}
+                        onChangeText={(text) => setHeight(text)}
+                    />
+                    {heightError ? <Text style={styles.errorText}>{heightError}</Text> : null}
+                </View>
                 <View style={styles.toggleContainer}>
                     <TouchableOpacity
                         style={[
@@ -149,8 +185,10 @@ const styles = StyleSheet.create({
         width: '100%',
         marginBottom: 20,
     },
-    input: {
+    inputColumn: {
         flex: 0.7,
+    },
+    input: {
         height: 50,
         borderColor: '#ccc',
         borderWidth: 1,
@@ -189,6 +227,11 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginTop: 5,
     },
     resultContainer: {
         marginTop: 20,
