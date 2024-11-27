@@ -136,6 +136,9 @@ export default function UserPage() {
                                 uri: user.image_url || 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
                             }}
                         />
+                        <View style={styles.editIconContainer}>
+            <Ionicons name="add-circle" size={24} color="#4B88A2" />
+        </View>
                     </TouchableOpacity>
 
                     {isDropdownVisible && (
@@ -225,6 +228,14 @@ export default function UserPage() {
 
 
 const styles = StyleSheet.create({
+    editIconContainer: {
+        position: 'absolute',
+        bottom: 20,        
+        right: 5,         
+        backgroundColor: '#fff', 
+        borderRadius: 12, 
+        elevation: 3,     
+    },
     scrollViewContainer: {
         flexGrow: 1,
         backgroundColor: '#FFF9FB',
