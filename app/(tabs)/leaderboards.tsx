@@ -59,8 +59,8 @@ export default function LeaderboardsPage() {
             <Text style={styles.rank}>{index + 1}.</Text>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userLevel}>Level: {user.level}</Text>
               <Text style={styles.userXP}>XP: {user.xp}</Text>
+              <Text style={styles.userLevel}>Level: {user.level}</Text>
               {index === 0 && (
               <Ionicons name="trophy" size={24} color="#FFD700" style={styles.trophyIcon} />
             )}
