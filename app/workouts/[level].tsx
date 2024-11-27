@@ -16,7 +16,8 @@ export default function Exercises() {
   const [isResting, setIsResting] = useState(false);
   const [xp, setXp] = useState(0);
   const [signedInUser, setSignedInUser] = useState(null);
-  const [showIntro, setShowIntro] = useState(true);   
+  const [showIntro, setShowIntro] = useState(true);
+  const [isWorkoutStarted, setIsWorkoutStarted] = useState(false); 
 
   useEffect(() => {
     AsyncStorage.getItem("signedInUser").then((user) => {
@@ -49,7 +50,15 @@ export default function Exercises() {
   }, [level]);
 
   useEffect(() => {
-    
+    if (isWorkoutStarted && exercises.length > 0 && currentExerciseIndex < exercises.length) {
+      const currentExercise = exercises[currentExerciseIndex];
+      setTimer(currentExercise.duration_in_seconds);
+      setIsTimerActive(true);
+      setIsResting(false);
+    }
+  }, [currentExerciseIndex, exercises, isWorkoutStarted]);
+
+  useEffect(() => {
     if (isTimerActive && timer > 0) {
       const countdown = setInterval(() => {
         setTimer((prev) => prev - 1);
@@ -58,19 +67,13 @@ export default function Exercises() {
     } else if (timer === 0 && isTimerActive) {
       if (isResting) {
         handleNextExercise();
+      } else if (currentExerciseIndex === exercises.length - 1) {
+        handleFinishWorkout();
       } else {
         startRestPeriod();
       }
     }
   }, [isTimerActive, timer]);
-
-  useEffect(() => {
-    if (exercises[currentExerciseIndex]) {
-      setTimer(exercises[currentExerciseIndex].duration_in_seconds);
-      setIsTimerActive(false);  
-      setIsResting(false);
-    }
-  }, [currentExerciseIndex, exercises]);
 
   const saveProgress = async (completed = false) => {
     const savedProgress = await AsyncStorage.getItem('workoutProgress');
@@ -90,7 +93,7 @@ export default function Exercises() {
       startRestPeriod();
     } else if (currentExerciseIndex < exercises.length - 1) {
       setXp((currentXp) => {
-        return currentXp + currentExercise.xp;
+        return currentXp + exercises[currentExerciseIndex].xp;
       });
       setCurrentExerciseIndex((prev) => {
         const newIndex = prev + 1;
@@ -109,7 +112,7 @@ export default function Exercises() {
 
   const handleStartWorkout = () => {
     setShowIntro(false);  
-    setIsTimerActive(true); 
+    setIsWorkoutStarted(true);  
   };
 
   if (isLoading) {
@@ -121,7 +124,6 @@ export default function Exercises() {
   return (
     <View style={styles.container}>
       {showIntro ? (
-        
         <View style={styles.introCard}>
           <Text style={styles.introTitle}>Welcome to Level {level} Workout</Text>
           <Text style={styles.introText}>Here are the exercises you will do:</Text>
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 30,
-    marginTop: 20,  
+    marginTop: 20,
   },
   title: {
     fontSize: 24,
@@ -255,47 +257,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#555',
     marginBottom: 10,
-    textAlign: 'center',
   },
   exerciseDuration: {
     fontSize: 16,
-    color: '#777',
-    marginBottom: 5,
-  },
-  restText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    textAlign: 'center',
+    color: '#333',
   },
   timer: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#E74C3C',
-    marginTop: 20,
+    color: '#333',
+    marginTop: 10,
   },
   buttonContainer: {
+    flexDirection: 'row',
     marginTop: 20,
-    width: '100%',
-    alignItems: 'center',
+    justifyContent: 'center',
   },
   nextButton: {
-    backgroundColor: '#f0ad4e',
+    backgroundColor: '#4B88A2',
     paddingVertical: 12,
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     borderRadius: 30,
-    marginBottom: 20,
+    marginHorizontal: 10,
   },
   finishButton: {
     backgroundColor: '#5cb85c',
     paddingVertical: 12,
-    paddingHorizontal: 40,
+    paddingHorizontal: 30,
     borderRadius: 30,
+    marginHorizontal: 10,
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+  },
+  restText: {
+    fontSize: 24,
+    color: '#FBB34B',
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
+
