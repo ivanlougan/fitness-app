@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'; 
+import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getWorkouts } from '../../api';
 import XpBar from '../components/XpBar';
@@ -15,11 +15,30 @@ export default function WorkoutLevelsPage() {
     const fetchWorkouts = async () => {
       try {
         const fetchedWorkouts = await getWorkouts();
-        const savedProgress = await AsyncStorage.getItem('workoutProgress');
         const signedInUser = await AsyncStorage.getItem('signedInUser');
+        const savedProgress = await AsyncStorage.getItem('workoutProgress');
 
-        setProgress(savedProgress ? JSON.parse(savedProgress) : {});
-        setUser(signedInUser ? JSON.parse(signedInUser) : null);
+        if (!signedInUser) {
+          Alert.alert('Error', 'No user is signed in.');
+          return;
+        }
+
+        const user = JSON.parse(signedInUser);
+        setUser(user);
+
+        const initialProgress = savedProgress ? JSON.parse(savedProgress) : {};
+
+        const updatedProgress = {};
+
+        workouts.forEach((workout) => {
+          if (workout.level <= user.level) {
+            updatedProgress[workout.level] = { completed: true };
+          } else {
+            updatedProgress[workout.level] = { completed: false };
+          }
+        });
+
+        setProgress(updatedProgress);
 
         if (Array.isArray(fetchedWorkouts)) {
           setWorkouts(fetchedWorkouts);
@@ -36,12 +55,12 @@ export default function WorkoutLevelsPage() {
 
   const updateProgress = async (level) => {
     if (progress[level]?.completed) return;
-  
+
     const updatedProgress = {
       ...progress,
       [level]: { currentExerciseIndex: -1, completed: false },
     };
-  
+
     try {
       await AsyncStorage.setItem('workoutProgress', JSON.stringify(updatedProgress));
       setProgress(updatedProgress);
@@ -49,8 +68,15 @@ export default function WorkoutLevelsPage() {
       Alert.alert('Error', 'Failed to update progress');
     }
   };
-  
+
   const handleWorkoutPress = (level) => {
+    if (!user) return;
+
+    if (level > user.level) {
+      Alert.alert('Locked', 'Complete previous levels to unlock this workout.');
+      return;
+    }
+
     if (progress[level]?.completed) {
       Alert.alert('Already Completed', 'You have already completed this level.');
     } else {
@@ -58,30 +84,27 @@ export default function WorkoutLevelsPage() {
       router.push(`/workouts/${level}`);
     }
   };
-  
 
   const getButtonText = (level) => {
     if (progress[level]?.completed) return 'Completed';
-    if (progress[level]?.currentExerciseIndex >= 0) return 'Resume Workout';
-    return 'Start Workout';
+    if (level <= user.level) return 'Start Workout';
+    return 'Locked';
   };
-  
+
   const getBackgroundColor = (level, maxLevel) => {
     const percentage = (level - 1) / (maxLevel - 1);
-    const red = Math.min(255, Math.floor(255 * percentage)); 
-    const green = Math.max(0, Math.floor(255 * (1 - percentage))); 
+    const red = Math.min(255, Math.floor(255 * percentage));
+    const green = Math.max(0, Math.floor(255 * (1 - percentage)));
     const blue = 0;
 
-
-    return `rgba(${red}, ${green}, ${blue}, 0.7)`; 
+    return `rgba(${red}, ${green}, ${blue}, 0.7)`;
   };
 
-
-  const maxLevel = Math.max(...workouts.map(workout => workout.level)); 
+  const maxLevel = Math.max(...workouts.map(workout => workout.level));
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <XpBar/>
+      <XpBar />
       <View style={styles.levelsContainer}>
         {workouts.map((workout, index) => (
           <View
@@ -89,7 +112,7 @@ export default function WorkoutLevelsPage() {
             style={[
               styles.levelCard,
               {
-                backgroundColor: getBackgroundColor(workout.level, maxLevel), 
+                backgroundColor: getBackgroundColor(workout.level, maxLevel),
               },
             ]}
           >
@@ -101,6 +124,7 @@ export default function WorkoutLevelsPage() {
                   progress[workout.level]?.completed && styles.disabledButton,
                 ]}
                 onPress={() => handleWorkoutPress(workout.level)}
+                disabled={progress[workout.level]?.completed || workout.level > user.level}
               >
                 <Text style={styles.buttonText}>{getButtonText(workout.level)}</Text>
               </TouchableOpacity>
@@ -163,18 +187,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF9FB',
-  },
-  loadingText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4B88A2',
-  },
   disabledButton: {
     backgroundColor: '#ccc',
   },
 });
+
