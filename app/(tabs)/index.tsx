@@ -30,7 +30,7 @@ export default function WorkoutLevelsPage() {
 
         const updatedProgress = {};
 
-        workouts.forEach((workout) => {
+        fetchedWorkouts.forEach((workout) => {
           if (workout.level <= user.level) {
             updatedProgress[workout.level] = { completed: true };
           } else {
@@ -100,7 +100,7 @@ export default function WorkoutLevelsPage() {
     return `rgba(${red}, ${green}, ${blue}, 0.7)`;
   };
 
-  const maxLevel = Math.max(...workouts.map(workout => workout.level));
+  const maxLevel = workouts.length > 0 ? Math.max(...workouts.map(workout => workout.level)) : 1;
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -131,6 +131,12 @@ export default function WorkoutLevelsPage() {
             </View>
           </View>
         ))}
+
+        <View style={[styles.levelCard, styles.noMoreWorkoutsCard]}>
+          <Text style={styles.noMoreWorkoutsText}>
+            No more workouts available. Wait for the next update!
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -190,5 +196,14 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: '#ccc',
   },
+  noMoreWorkoutsCard: {
+    backgroundColor: '#FFD700',
+    paddingVertical: 30,
+  },
+  noMoreWorkoutsText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+  },
 });
-
