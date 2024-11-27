@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import { getUsers } from "../../api.js";
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import Ionicons from '@expo/vector-icons/Ionicons';
+import LoadingDumbbell from "../components/LoadingAnimation.js";
 
 export default function LeaderboardsPage() {
   const [users, setUsers] = useState([]);
@@ -34,7 +35,7 @@ export default function LeaderboardsPage() {
   }, []);
 
   if (isLoading) {
-    return <Text>Now loading...</Text>;
+    return <LoadingDumbbell />;
   }
 
   if (error) {

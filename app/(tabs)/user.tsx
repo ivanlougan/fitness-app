@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addGoal, deleteGoal, getUsers, patchUser } from '../../api';
 import { Ionicons } from 'react-native-vector-icons'; 
 import XpBar from '../components/XpBar';
+import LoadingDumbbell from '../components/LoadingAnimation';
 
 export default function UserPage() {
     const router = useRouter();
@@ -214,7 +215,7 @@ export default function UserPage() {
                     </View>
                 </>
             ) : (
-                <Text>Loading user information...</Text>
+                <LoadingDumbbell />
             )}
         </ScrollView>
         </>
@@ -313,26 +314,26 @@ const styles = StyleSheet.create({
     },
     addButton: {
         backgroundColor: '#f0ad4e',
-        padding: 0,               // Remove extra padding
+        padding: 0,               
         borderRadius: 50,
         marginBottom: 5,
-        alignSelf: 'center',      // Center the button horizontally
-        width: 50,                // Keep the button larger
-        height: 50,               // Keep the button larger
-        justifyContent: 'center', // Vertically center content
-        alignItems: 'center',     // Horizontally center content
-        position: 'relative',     // Ensure elements within the button are well aligned
+        alignSelf: 'center',      
+        width: 50,                
+        height: 50,               
+        justifyContent: 'center', 
+        alignItems: 'center',     
+        position: 'relative',     
     },
     addButtonEditing: {
-        backgroundColor: 'red',               // Remove extra padding
+        backgroundColor: 'red',               
         borderRadius: 50,
         marginBottom: 20,
-        alignSelf: 'flex-end',     // Align to the right
-        width: 40,                // Smaller size
-        height: 40,               // Smaller size
-        justifyContent: 'center', // Vertically center content
-        alignItems: 'center',     // Horizontally center content
-        position: 'relative',     // Position to adjust elements if needed
+        alignSelf: 'flex-end',     
+        width: 40,                
+        height: 40,               
+        justifyContent: 'center', 
+        alignItems: 'center',     
+        position: 'relative',     
     },
     saveButton: {
         backgroundColor: '#5cb85c',

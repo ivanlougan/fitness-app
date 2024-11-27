@@ -8,29 +8,27 @@ export const options = {
 export default function BMI() {
     const [weight, setWeight] = useState('');
     const [height, setHeight] = useState('');
-    const [weightUnit, setWeightUnit] = useState('kg'); // Default to kg
-    const [heightUnit, setHeightUnit] = useState('cm'); // Default to cm
+    const [weightUnit, setWeightUnit] = useState('kg'); 
+    const [heightUnit, setHeightUnit] = useState('cm'); 
     const [bmi, setBmi] = useState(null);
     const [status, setStatus] = useState('');
 
-    // Convert weight to kg (only supporting kg and lbs now)
+    
     const convertWeightToKg = () => {
         if (weightUnit === 'lbs') {
-            return parseFloat(weight) * 0.453592; // Convert pounds to kg
+            return parseFloat(weight) * 0.453592; 
         }
-        return parseFloat(weight); // Weight is already in kg
+        return parseFloat(weight); 
     };
 
-    // Convert height to meters
     const convertHeightToMeters = () => {
         if (heightUnit === 'ft') {
-            const [feet, inches = 0] = height.split('.').map(Number); // Split feet and inches
-            return (feet * 0.3048) + (inches * 0.0254); // Convert feet and inches to meters
+            const [feet, inches = 0] = height.split('.').map(Number); 
+            return (feet * 0.3048) + (inches * 0.0254); 
         }
-        return parseFloat(height) / 100; // Convert cm to meters
+        return parseFloat(height) / 100; 
     };
 
-    // Calculate BMI
     const calculateBMI = () => {
         const weightInKg = convertWeightToKg();
         const heightInMeters = convertHeightToMeters();
@@ -38,7 +36,6 @@ export default function BMI() {
             const bmiValue = weightInKg / (heightInMeters * heightInMeters);
             setBmi(bmiValue.toFixed(2));
 
-            // Determine BMI status
             if (bmiValue < 18.5) {
                 setStatus('Underweight');
             } else if (bmiValue >= 18.5 && bmiValue < 24.9) {
@@ -58,7 +55,6 @@ export default function BMI() {
         <View style={styles.container}>
             <Text style={styles.title}>BMI Calculator</Text>
 
-            {/* Weight Input with Toggle Buttons */}
             <View style={styles.inputRow}>
                 <TextInput
                     style={styles.input}
@@ -89,7 +85,6 @@ export default function BMI() {
                 </View>
             </View>
 
-            {/* Height Input with Toggle Buttons */}
             <View style={styles.inputRow}>
                 <TextInput
                     style={styles.input}
@@ -120,12 +115,10 @@ export default function BMI() {
                 </View>
             </View>
 
-            {/* Calculate Button */}
             <TouchableOpacity style={[styles.button, {backgroundColor: '#4B88A2'}]} onPress={calculateBMI}>
                 <Text style={styles.buttonText}>Calculate BMI</Text>
             </TouchableOpacity>
 
-            {/* Display BMI Result */}
             {bmi && (
                 <View style={styles.resultContainer}>
                     <Text style={styles.resultText}>Your BMI: {bmi}</Text>
