@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getLevelExercises, patchUser } from '../../api';
+import { getLevelExercises } from '../../api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import XpBar from "../components/XpBar.jsx";
 
