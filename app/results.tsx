@@ -12,37 +12,35 @@ export default function ResultPage() {
         try {
             const savedProgress = await AsyncStorage.getItem('workoutProgress');
             const progress = savedProgress ? JSON.parse(savedProgress) : {};
-            
+    
             const signedInUser = await AsyncStorage.getItem('signedInUser');
             const user = signedInUser ? JSON.parse(signedInUser) : null;
-            const levelCompleted = parseInt(level)
-            
+    
+            const levelCompleted = parseInt(level);
+            const xpIncrement = parseInt(xp); 
+    
             if (user) {
-                const newUser = user.level === levelCompleted ? await patchUser(user._id, {xp_increment: 100, level_increment: 1}) : await patchUser(user._id, {xp_increment: 100})
+                const levelIncrement = user.level === levelCompleted ? 1 : 0;
+                const newUser = await patchUser(user._id, { xp_increment: xpIncrement, level_increment: levelIncrement });
                 await AsyncStorage.setItem('signedInUser', JSON.stringify(newUser));
             }
-            
-            if (!progress[level]) {
-                progress[level] = { currentExerciseIndex: -1, completed: true };
-            } else {
-                progress[level].completed = true;
-            }
-
+    
+            progress[level] = { currentExerciseIndex: -1, completed: true };
             await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
-
+    
             Alert.alert('Success', 'Workout completed and progress updated!');
-            router.push('/'); 
+            router.push('/');
         } catch (error) {
             Alert.alert('Error', 'Failed to update progress');
         }
     };
+    
 
     return (
         <View style={styles.container}>
             <XpBar xp={xp} />
             <Text style={styles.title}>Results:</Text>
-            <Text style={styles.text}>XP gained: 100XP</Text>
-            <Text style={styles.text}>Calories burnt: 100</Text>
+            <Text style={styles.text}>XP gained: {xp} XP</Text>
             <TouchableOpacity style={styles.shareButton}>
                 <Text style={styles.buttonText}>Share results</Text>
             </TouchableOpacity>

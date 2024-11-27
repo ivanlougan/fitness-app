@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getLevelExercises } from '../../api';
+import { getLevelExercises, patchUser } from '../../api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import XpBar from "../components/XpBar.jsx";
 
@@ -17,34 +17,40 @@ export default function Exercises() {
   const [xp, setXp] = useState(0);
   const [signedInUser, setSignedInUser] = useState(null);
   const [showIntro, setShowIntro] = useState(true);
-  const [isWorkoutStarted, setIsWorkoutStarted] = useState(false); 
-
-  useEffect(() => {
-    AsyncStorage.getItem("signedInUser").then((user) => {
-      setSignedInUser(JSON.parse(user));
-    });
-  }, []);
+  const [isWorkoutStarted, setIsWorkoutStarted] = useState(false);
 
   const REST_PERIOD_SECONDS = 20;
 
   useEffect(() => {
+    AsyncStorage.getItem("signedInUser").then((user) => {
+      if (user) {
+        try {
+          setSignedInUser(JSON.parse(user));
+        } catch (error) {
+          console.error("Failed to parse signed-in user data:", error);
+        }
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     const fetchExercises = async () => {
       setIsLoading(true);
-      const savedProgress = await AsyncStorage.getItem('workoutProgress');
-      const progress = savedProgress ? JSON.parse(savedProgress) : {};
+      try {
+        const savedProgress = await AsyncStorage.getItem('workoutProgress');
+        const progress = savedProgress ? JSON.parse(savedProgress) : {};
 
-      if (progress[level]?.currentExerciseIndex >= 0) {
-        setCurrentExerciseIndex(progress[level].currentExerciseIndex);
+        if (progress[level]?.currentExerciseIndex >= 0) {
+          setCurrentExerciseIndex(progress[level].currentExerciseIndex);
+        }
+
+        const data = await getLevelExercises(level);
+        setExercises(data);
+      } catch (error) {
+        console.error('Failed to fetch exercises:', error);
+      } finally {
+        setIsLoading(false);
       }
-
-      getLevelExercises(level)
-        .then((data) => {
-          setExercises(data);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setIsLoading(false);
-        });
     };
     fetchExercises();
   }, [level]);
@@ -75,11 +81,15 @@ export default function Exercises() {
     }
   }, [isTimerActive, timer]);
 
-  const saveProgress = async (completed = false) => {
-    const savedProgress = await AsyncStorage.getItem('workoutProgress');
-    const progress = savedProgress ? JSON.parse(savedProgress) : {};
-    progress[level] = { currentExerciseIndex, completed };
-    await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
+  const saveProgress = async () => {
+    try {
+      const savedProgress = await AsyncStorage.getItem('workoutProgress');
+      const progress = savedProgress ? JSON.parse(savedProgress) : {};
+      progress[level] = { currentExerciseIndex, completed: false };
+      await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
   };
 
   const startRestPeriod = () => {
@@ -88,31 +98,39 @@ export default function Exercises() {
     setIsTimerActive(true);
   };
 
-  const handleNextExercise = () => {
+  const handleNextExercise = async () => {
     if (!isResting) {
       startRestPeriod();
     } else if (currentExerciseIndex < exercises.length - 1) {
-      setXp((currentXp) => {
-        return currentXp + exercises[currentExerciseIndex].xp;
-      });
-      setCurrentExerciseIndex((prev) => {
-        const newIndex = prev + 1;
-        saveProgress();
-        return newIndex;
-      });
+      setXp((currentXp) => currentXp + exercises[currentExerciseIndex].xp);
+      setCurrentExerciseIndex((prev) => prev + 1);
+      await saveProgress();
     } else {
       setIsTimerActive(false);
     }
   };
 
   const handleFinishWorkout = async () => {
-    await saveProgress(true);
-    router.push(`/results?xp=${signedInUser.xp + 100}&level=${level}`);
+    try {
+      const lastExerciseXP = exercises[currentExerciseIndex]?.xp || 0;
+      const totalXpEarned = xp + lastExerciseXP;
+
+      const savedProgress = await AsyncStorage.getItem('workoutProgress');
+      const progress = savedProgress ? JSON.parse(savedProgress) : {};
+      progress[level] = { currentExerciseIndex: -1, completed: true };
+      await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
+
+      await AsyncStorage.setItem('workoutXp', JSON.stringify(totalXpEarned));
+
+      router.push(`/results?xp=${totalXpEarned}&level=${level}`);
+    } catch (error) {
+      console.error('Failed to finish workout:', error);
+    }
   };
 
   const handleStartWorkout = () => {
-    setShowIntro(false);  
-    setIsWorkoutStarted(true);  
+    setShowIntro(false);
+    setIsWorkoutStarted(true);
   };
 
   if (isLoading) {
@@ -129,13 +147,16 @@ export default function Exercises() {
           <Text style={styles.introText}>Here are the exercises you will do:</Text>
           {exercises.map((exercise, index) => (
             <Text key={index} style={styles.exerciseItem}>
-              {exercise.name}: {exercise.duration_in_seconds} seconds
+              {exercise.name}: {exercise.duration_in_seconds} seconds (+{exercise.xp} XP)
             </Text>
           ))}
+          <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
+            <Text style={styles.buttonText}>Start Workout</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <>
-          <XpBar xp={signedInUser.xp} />
+          <XpBar xp={xp} />
           <Text style={styles.title}>
             {isResting
               ? 'Rest Period'
@@ -149,7 +170,7 @@ export default function Exercises() {
                 <Text style={styles.exerciseName}>{currentExercise.name}</Text>
                 <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
                 <Text style={styles.exerciseDuration}>
-                  Duration: {currentExercise.duration_in_seconds} seconds
+                  Duration: {currentExercise.duration_in_seconds} seconds (+{currentExercise.xp} XP)
                 </Text>
               </>
             )}
@@ -169,12 +190,6 @@ export default function Exercises() {
             )}
           </View>
         </>
-      )}
-      
-      {showIntro && (
-        <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
-          <Text style={styles.buttonText}>Start Workout</Text>
-        </TouchableOpacity>
       )}
     </View>
   );
