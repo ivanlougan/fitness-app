@@ -16,7 +16,7 @@ export default function Exercises() {
   const [isResting, setIsResting] = useState(false);
   const [xp, setXp] = useState(0);
   const [signedInUser, setSignedInUser] = useState(null);
-  const [showIntro, setShowIntro] = useState(true);  // State to control intro card visibility
+  const [showIntro, setShowIntro] = useState(true);   
 
   useEffect(() => {
     AsyncStorage.getItem("signedInUser").then((user) => {
