@@ -12,24 +12,20 @@ export default function ResultPage() {
         try {
             const savedProgress = await AsyncStorage.getItem('workoutProgress');
             const progress = savedProgress ? JSON.parse(savedProgress) : {};
-
+            
+            const signedInUser = await AsyncStorage.getItem('signedInUser');
+            const user = signedInUser ? JSON.parse(signedInUser) : null;
+            const levelCompleted = parseInt(level)
+            
+            if (user) {
+                const newUser = user.level === levelCompleted ? await patchUser(user._id, {xp_increment: 100, level_increment: 1}) : await patchUser(user._id, {xp_increment: 100})
+                await AsyncStorage.setItem('signedInUser', JSON.stringify(newUser));
+            }
+            
             if (!progress[level]) {
                 progress[level] = { currentExerciseIndex: -1, completed: true };
             } else {
                 progress[level].completed = true;
-            }
-
-            const signedInUser = await AsyncStorage.getItem('signedInUser');
-            const user = signedInUser ? JSON.parse(signedInUser) : null;
-
-            if (user) {
-                console.log(user._id)
-                const newUser = await patchUser(user._id, {xp_increment: 100, level_increment: 1})
-                /*user.xp += 100; 
-                user.level += 1;*/
-                console.log(newUser)
-                await AsyncStorage.setItem('signedInUser', JSON.stringify(newUser));
-                console.log(signedInUser)
             }
 
             await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));

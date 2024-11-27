@@ -41,15 +41,13 @@ export default function LeaderboardsPage() {
     return <Text>{error}</Text>;
   }
 
-  const sortedUsers = users.sort((a, b) => b.xp - a.xp);
-
-  const signedInUserIndex = sortedUsers.findIndex(user => user._id === signedInUser?._id);
+  const signedInUserIndex = users.findIndex(user => user._id === signedInUser?._id);
   
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Leaderboard</Text>
       <View style={styles.leaderboardContainer}>
-        {sortedUsers.map((user, index) => (
+        {users.map((user, index) => (
           <View
             key={`user-${user._id}-container`}
             style={[
