@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router'; 
 import XpBar from './components/XpBar.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { patchUser } from '@/api.js';
 
 export default function ResultPage() {
     const router = useRouter();
@@ -11,20 +12,20 @@ export default function ResultPage() {
         try {
             const savedProgress = await AsyncStorage.getItem('workoutProgress');
             const progress = savedProgress ? JSON.parse(savedProgress) : {};
-
+            
+            const signedInUser = await AsyncStorage.getItem('signedInUser');
+            const user = signedInUser ? JSON.parse(signedInUser) : null;
+            const levelCompleted = parseInt(level)
+            
+            if (user) {
+                const newUser = user.level === levelCompleted ? await patchUser(user._id, {xp_increment: 100, level_increment: 1}) : await patchUser(user._id, {xp_increment: 100})
+                await AsyncStorage.setItem('signedInUser', JSON.stringify(newUser));
+            }
+            
             if (!progress[level]) {
                 progress[level] = { currentExerciseIndex: -1, completed: true };
             } else {
                 progress[level].completed = true;
-            }
-
-            const signedInUser = await AsyncStorage.getItem('signedInUser');
-            const user = signedInUser ? JSON.parse(signedInUser) : null;
-
-            if (user) {
-                user.xp += 100; 
-                user.level += 1; 
-                await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
             }
 
             await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));

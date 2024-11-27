@@ -107,7 +107,7 @@ export default function Exercises() {
 
   const handleFinishWorkout = async () => {
     await saveProgress(true);
-    router.push(`/results?xp=${signedInUser.xp + 100}`);  
+    router.push(`/results?xp=${signedInUser.xp + 100}&level=${level}`);
   };
 
   const handleStartWorkout = () => {
