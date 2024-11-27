@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router'; 
 import XpBar from './components/XpBar.jsx';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { patchUser } from '@/api.js';
 
 export default function ResultPage() {
     const router = useRouter();
@@ -22,9 +23,13 @@ export default function ResultPage() {
             const user = signedInUser ? JSON.parse(signedInUser) : null;
 
             if (user) {
-                user.xp += 100; 
-                user.level += 1; 
-                await AsyncStorage.setItem('signedInUser', JSON.stringify(user));
+                console.log(user._id)
+                const newUser = await patchUser(user._id, {xp_increment: 100, level_increment: 1})
+                /*user.xp += 100; 
+                user.level += 1;*/
+                console.log(newUser)
+                await AsyncStorage.setItem('signedInUser', JSON.stringify(newUser));
+                console.log(signedInUser)
             }
 
             await AsyncStorage.setItem('workoutProgress', JSON.stringify(progress));
