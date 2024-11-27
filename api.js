@@ -14,8 +14,12 @@ const getUsers = () => {
 };
 
 function patchUser(userId, options){
-    return api.patch(`/users/${userId}`, options).then(({data}) => {
+    return api.patch(`/users/${userId}`, options)
+    .then(({data}) => {
         return data.user
+    })
+    .catch(error => {
+      throw error
     })
 }
 

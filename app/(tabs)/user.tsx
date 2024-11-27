@@ -111,17 +111,25 @@ export default function UserPage() {
             Alert.alert('Error', 'Please enter a valid image URL.');
             return;
         }
-
+    
         try {
-            const updatedUser = { ...user, image_url: newImageUrl };
-            setUser(updatedUser);
-            await AsyncStorage.setItem('signedInUser', JSON.stringify(updatedUser));
-            setIsDropdownVisible(false); 
-            Alert.alert('Success', 'Profile image updated successfully!');
+            const response = await patchUser(user._id, { image_url: newImageUrl });
+    
+            if (response) {
+                setUser(response);
+                await AsyncStorage.setItem('signedInUser', JSON.stringify(response));
+                
+                setIsDropdownVisible(false);
+                Alert.alert('Success', 'Profile image updated successfully!');
+            } else {
+                throw new Error('Failed to receive updated user data from the server');
+            }
         } catch (error) {
+            console.error('Error updating profile image:', error);
             Alert.alert('Error', 'Failed to update profile image.');
         }
     };
+    
 
     return (
         <>
