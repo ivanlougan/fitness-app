@@ -15,7 +15,7 @@ export default function BMI() {
     const [weightError, setWeightError] = useState('');
     const [heightError, setHeightError] = useState('');
 
-    const isNumeric = (value) => /^\d*\.?\d+$/.test(value); // Validate numeric input
+    const isNumeric = (value) => /^\d*\.?\d+$/.test(value); 
 
     const convertWeightToKg = () => {
         if (weightUnit === 'lbs') {
