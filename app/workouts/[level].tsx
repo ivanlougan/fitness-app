@@ -49,7 +49,7 @@ export default function Exercises() {
   }, [level]);
 
   useEffect(() => {
-    // Start the timer only when the user clicks Start Workout
+    
     if (isTimerActive && timer > 0) {
       const countdown = setInterval(() => {
         setTimer((prev) => prev - 1);
@@ -67,7 +67,7 @@ export default function Exercises() {
   useEffect(() => {
     if (exercises[currentExerciseIndex]) {
       setTimer(exercises[currentExerciseIndex].duration_in_seconds);
-      setIsTimerActive(false);  // Don't start the timer yet
+      setIsTimerActive(false);  
       setIsResting(false);
     }
   }, [currentExerciseIndex, exercises]);
@@ -108,8 +108,8 @@ export default function Exercises() {
   };
 
   const handleStartWorkout = () => {
-    setShowIntro(false);  // Hide intro and start workout
-    setIsTimerActive(true);  // Start the timer for the first exercise
+    setShowIntro(false);  
+    setIsTimerActive(true); 
   };
 
   if (isLoading) {
@@ -121,7 +121,7 @@ export default function Exercises() {
   return (
     <View style={styles.container}>
       {showIntro ? (
-        // Intro Card with the list of exercises
+        
         <View style={styles.introCard}>
           <Text style={styles.introTitle}>Welcome to Level {level} Workout</Text>
           <Text style={styles.introText}>Here are the exercises you will do:</Text>
@@ -169,7 +169,6 @@ export default function Exercises() {
         </>
       )}
       
-      {/* Start Workout Button outside of the intro card */}
       {showIntro && (
         <TouchableOpacity style={styles.startButton} onPress={handleStartWorkout}>
           <Text style={styles.buttonText}>Start Workout</Text>
@@ -224,7 +223,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 30,
-    marginTop: 20,  // Adjusting margin to create space between intro card and button
+    marginTop: 20,  
   },
   title: {
     fontSize: 24,
