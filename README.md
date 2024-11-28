@@ -5,12 +5,7 @@ This is a personalized gamified fitness application designed for use on mobile d
 Instructions:
 
 1. Clone the repository: git clone https://github.com/urandias/fitness-app.git
-2. Install dependencies:
-     - npm install
-     - npm install axios
-     - npm install @react-native-async-storage/async-storage
-     - npm install react-native-dotenv
-     - npm install expo-router
+2. Install dependencies: npm install
 3. Install Expo Go on your device or on your emulator/simulator https://expo.dev/go
 4. Start the development server: npx expo start
 
