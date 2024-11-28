@@ -89,22 +89,6 @@ export default function UserPage() {
             Alert.alert('Error', 'Failed to delete goal.');
         }
     };
-      
-    const handleResetProgress = async () => {
-        try {
-          await AsyncStorage.removeItem('workoutProgress');
-          const signedInUser = JSON.parse(await AsyncStorage.getItem('signedInUser'))
-          console.log(signedInUser)
-          const updatedUser = await patchUser(signedInUser._id, {reset_level: true, reset_xp: true})
-          console.log(updatedUser)
-          await AsyncStorage.setItem("signedInUser", JSON.stringify(updatedUser))
-          resetProgressChecker = !resetProgressChecker
-          Alert.alert('Success', 'All progress and user level have been reset!');
-        } catch (error) {
-          Alert.alert('Error', 'Failed to reset progress.');
-          console.error('Error resetting progress:', error);
-        }
-    };
 
     const handleImageChange = async () => {
         if (!newImageUrl.trim()) {
@@ -218,10 +202,6 @@ export default function UserPage() {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.logout} onPress={handleLogout}>
                             <Text style={styles.logoutText}>Log Out</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.resetButton} onPress={handleResetProgress}>
-                            <Text style={styles.resetButtonText}>Reset Progress</Text>
                         </TouchableOpacity>
                     </View>
                 </>
@@ -401,15 +381,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         borderRadius: 5,
         marginLeft: 5,
-    },
-    resetButton: {
-        backgroundColor: '#d9534f',
-        padding: 7,
-        borderRadius: 30,
-        marginTop: 10,
-        marginBottom: 5,
-        width: '40%',
-        alignSelf: 'flex-end',
     },
     resetButtonText: {
         color: '#fff',
