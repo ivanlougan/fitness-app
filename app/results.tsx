@@ -41,9 +41,6 @@ export default function ResultPage() {
             <XpBar xp={xp} />
             <Text style={styles.title}>Results:</Text>
             <Text style={styles.text}>XP gained: {xp} XP</Text>
-            <TouchableOpacity style={styles.shareButton}>
-                <Text style={styles.buttonText}>Share results</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleFinish}>
                 <Text style={styles.buttonText}>Finish</Text>
             </TouchableOpacity>
@@ -71,14 +68,6 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#4B88A2',
         marginTop: 20,
-        paddingVertical: 12,
-        paddingHorizontal: 25,
-        borderRadius: 25,
-        alignItems: 'center',
-    },
-    shareButton: {
-        marginTop: 20,
-        backgroundColor: '#4CAF50',
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 25,

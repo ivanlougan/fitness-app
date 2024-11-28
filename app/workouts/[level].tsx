@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLevelExercises } from '../../api';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -167,6 +167,10 @@ export default function Exercises() {
               <Text style={styles.restText}>Take a break!</Text>
             ) : (
               <>
+                {/* Displaying the exercise image */}
+                {currentExercise.image_url && (
+                  <Image source={{ uri: currentExercise.image_url }} style={styles.exerciseImage} />
+                )}
                 <Text style={styles.exerciseName}>{currentExercise.name}</Text>
                 <Text style={styles.exerciseDescription}>{currentExercise.description}</Text>
                 <Text style={styles.exerciseDuration}>
@@ -277,6 +281,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  exerciseImage: {
+    width: 300, 
+    height: undefined, 
+    aspectRatio: 16 / 9, 
+    marginBottom: 10,
+    borderRadius: 10,
+    resizeMode: 'contain', 
+  },
   timer: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -313,4 +325,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
+
 
