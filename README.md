@@ -1,6 +1,7 @@
 # Welcome to the Expo app 👋
 
 This is a personalized gamified fitness application designed for use on mobile devices. After selecting the user you want to log in as, you can explore all the features of this app, whose main goal is to complete all the workouts, thereby increasing your level and experience.
+Demo: https://youtu.be/gtd6eRPaG-M
 
 Instructions:
 
